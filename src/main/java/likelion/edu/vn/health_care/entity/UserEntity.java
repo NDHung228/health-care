@@ -7,30 +7,45 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 import lombok.*;
 
+import java.util.Date;
+
 @Entity
-@Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "users")
-@Getter
-@Setter
 public class UserEntity extends BaseEntity{
 
     @NonNull
     @Column(unique = true, nullable = false)
-    private String username;
+    private String email;
 
     @NonNull
     private String password;
 
-    private int role_id;
+    @NonNull
+    private int roleId;
 
-    public @NonNull String getUsername() {
-        return username;
+    @NonNull
+    private Date dob;
+
+    @NonNull
+    private String phone;
+
+    @NonNull
+    private String address;
+
+    @NonNull
+    private String gender;
+
+    @NonNull
+    private String avatarUrl;
+
+    public @NonNull String getEmail() {
+        return email;
     }
 
-    public void setUsername(@NonNull String username) {
-        this.username = username;
+    public void setEmail(@NonNull String email) {
+        this.email = email;
     }
 
     public @NonNull String getPassword() {
@@ -41,11 +56,53 @@ public class UserEntity extends BaseEntity{
         this.password = password;
     }
 
+    @NonNull
+    public int getRoleId() {
+        return roleId;
+    }
 
+    public void setRoleId(@NonNull int roleId) {
+        this.roleId = roleId;
+    }
 
-    public UserEntity(@NonNull String username, @NonNull String password) {
-        this.username = username;
-        this.password = password;
+    public @NonNull Date getDob() {
+        return dob;
+    }
+
+    public void setDob(@NonNull Date dob) {
+        this.dob = dob;
+    }
+
+    public @NonNull String getPhone() {
+        return phone;
+    }
+
+    public void setPhone(@NonNull String phone) {
+        this.phone = phone;
+    }
+
+    public @NonNull String getAddress() {
+        return address;
+    }
+
+    public void setAddress(@NonNull String address) {
+        this.address = address;
+    }
+
+    public @NonNull String getGender() {
+        return gender;
+    }
+
+    public void setGender(@NonNull String gender) {
+        this.gender = gender;
+    }
+
+    public @NonNull String getAvatarUrl() {
+        return avatarUrl;
+    }
+
+    public void setAvatarUrl(@NonNull String avatarUrl) {
+        this.avatarUrl = avatarUrl;
     }
 }
 

@@ -1,6 +1,10 @@
 server:
   port: 8080
 
+jwt:
+  secret: syllabicate31231412312321314231231241241231231234124123
+  expiration: 86400000
+
 spring:
   datasource:
     url: jdbc:postgresql://dpg-cqtcgulds78s739jdn7g-a.singapore-postgres.render.com:5432/health_care_jl2l
@@ -10,7 +14,7 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: none
+      ddl-auto: update
     show-sql: true
     properties:
       hibernate:
