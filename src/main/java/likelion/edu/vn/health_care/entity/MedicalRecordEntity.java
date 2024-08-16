@@ -12,7 +12,7 @@ import lombok.NonNull;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class MedicalRecord extends BaseEntity{
+public class MedicalRecordEntity extends BaseEntity{
 
     @NonNull
     private String appointmentId;

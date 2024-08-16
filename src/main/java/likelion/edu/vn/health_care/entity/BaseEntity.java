@@ -18,4 +18,9 @@ public abstract class BaseEntity {
 
     @Column(nullable = true, insertable = false)
     private Date updateTime;
+
+    @PrePersist
+    protected void onCreate() {
+        this.createTime = new Date();
+    }
 }

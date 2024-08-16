@@ -26,7 +26,18 @@ public class UserEntity extends BaseEntity{
     private int roleId;
 
     @NonNull
+    private String fullName;
+
+    @NonNull
     private Date dob;
+
+    public @NonNull String getFullName() {
+        return fullName;
+    }
+
+    public void setFullName(@NonNull String fullName) {
+        this.fullName = fullName;
+    }
 
     @NonNull
     private String phone;
