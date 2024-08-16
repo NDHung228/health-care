@@ -45,8 +45,8 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http.csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth.requestMatchers("/api/user/login","/api/user/register").permitAll())
-                .authorizeHttpRequests(auth -> auth.requestMatchers("/api/admin/register").hasAuthority(Authorities.Admin.name()))
-//                .authorizeHttpRequests(auth -> auth.requestMatchers("/auth/admin/**").authenticated()
+                .authorizeHttpRequests(auth -> auth.requestMatchers("/api/user/doctor/**").hasAuthority(Authorities.Admin.name()))
+                .authorizeHttpRequests(auth -> auth.requestMatchers("/api/user/get-user").authenticated())
                 .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(authenticationProvider())
                 .addFilterBefore(authFilter, UsernamePasswordAuthenticationFilter.class)

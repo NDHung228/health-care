@@ -14,7 +14,7 @@ import lombok.NonNull;
 import java.util.Date;
 
 @Entity
-@Table(name = "appointment")
+@Table(name = "appointments")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
