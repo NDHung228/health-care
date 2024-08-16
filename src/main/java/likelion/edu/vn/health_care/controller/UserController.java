@@ -18,6 +18,7 @@ public class UserController {
 
     @PostMapping("/register")
     public ResponseEntity<Object> register(@RequestBody UserRequest user) {
+
         try {
             String response = userInfoService.addUser(user);
 
@@ -69,6 +70,35 @@ public class UserController {
     }
 
 
+    @PostMapping("/update")
+    public ResponseEntity<Object> update(@RequestBody UserRequest user) {
+        try {
+            UserResponse userResponse = userInfoService.updateUser(user);
 
+            if (userResponse != null) {
+                return ResponseEntity.ok(userResponse);
+            }
+            return ResponseHandler.generateResponse(HttpStatus.BAD_REQUEST, true, "Fail", null);
+        } catch (Exception e) {
+            return ResponseHandler.generateResponse(HttpStatus.BAD_REQUEST, true, e.getMessage(), null);
+        }
+    }
+
+
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<Object> deleteUser(@PathVariable Integer id) {
+        System.err.println("Delete " + id);
+        try {
+
+            String response = userInfoService.deleteUser(id);
+            if (response != null && !response.isEmpty()) {
+                return ResponseEntity.ok(response);
+            }
+            return ResponseHandler.generateResponse(HttpStatus.BAD_REQUEST, true, "Fail", null);
+
+        } catch (Exception e) {
+            return ResponseHandler.generateResponse(HttpStatus.BAD_REQUEST, true, e.getMessage(), null);
+        }
+    }
 
 }

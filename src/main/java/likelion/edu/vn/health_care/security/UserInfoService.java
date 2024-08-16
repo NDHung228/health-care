@@ -47,8 +47,7 @@ public class UserInfoService implements UserDetailsService {
 
     public String addUser(UserRequest userRequest) throws Exception {
         UserEntity userInfo = userMapper.toUserEntity(userRequest);
-        userInfo.setDob(userRequest.getDob());
-        userInfo.setPassword(encoder.encode(userInfo.getPassword()));
+        userInfo.setPassword(encoder.encode(userRequest.getPassword()));
         userInfo.setRoleId(1);
         try {
             repository.save(userInfo);
@@ -60,8 +59,7 @@ public class UserInfoService implements UserDetailsService {
 
     public String addDoctor(UserRequest userRequest) throws Exception {
         UserEntity userInfo = userMapper.toUserEntity(userRequest);
-        userInfo.setDob(userRequest.getDob());
-        userInfo.setPassword(encoder.encode(userInfo.getPassword()));
+        userInfo.setPassword(encoder.encode(userRequest.getPassword()));
         userInfo.setRoleId(2);
         try {
             repository.save(userInfo);
@@ -99,12 +97,34 @@ public class UserInfoService implements UserDetailsService {
 
     public UserResponse updateUser(UserRequest userRequest) throws Exception {
         try {
-            UserEntity userInfo = userMapper.toUserEntity(userRequest);
+            UserResponse checkCurrentUser = getUserDetails();
 
-            userInfo = repository.save(userInfo);
-            return userMapper.toUserResponse(userInfo);
+            if (checkCurrentUser != null && checkCurrentUser.getEmail().equals(userRequest.getEmail())) {
+                UserEntity userInfo = userMapper.toUserEntity(userRequest);
+
+                userInfo = repository.save(userInfo);
+                return userMapper.toUserResponse(userInfo);
+            }
+
+            return null;
+
         } catch (Exception e) {
             throw new Exception(e.getMessage());
         }
+    }
+
+    public String deleteUser(int id) throws Exception {
+        try {
+            repository.deleteById(id);
+            return "Delete user success";
+
+        } catch (Exception e) {
+            throw new Exception(e.getMessage());
+        }
+    }
+
+    public String getRoleName() {
+        String email = SecurityUtils.getEmail();
+        return repository.findByRoleName(email).orElse(null);
     }
 }

@@ -8,8 +8,24 @@ import org.mapstruct.Mapper;
 @Mapper(componentModel = "spring")
 public abstract class UserMapper {
 
-    public abstract UserEntity toUserEntity(UserRequest user);
+    public  UserEntity toUserEntity(UserRequest user){
+        UserEntity userEntity = new UserEntity();
+        userEntity.setDob(user.getDob());
+        userEntity.setEmail(user.getEmail());
+        userEntity.setFullName(user.getFullName());
+        userEntity.setAddress(user.getAddress());
+        userEntity.setPhone(user.getPhone());
+        return userEntity;
+    }
 
-
-    public abstract UserResponse toUserResponse(UserEntity user);
+    public UserResponse toUserResponse(UserEntity user) {
+        UserResponse userResponse = new UserResponse();
+        userResponse.setDob(user.getDob());
+        userResponse.setEmail(user.getEmail());
+        userResponse.setFullName(user.getFullName());
+        userResponse.setAddress(user.getAddress());
+        userResponse.setPhone(user.getPhone());
+        userResponse.setId(user.getId());
+        return userResponse;
+    }
 }

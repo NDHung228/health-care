@@ -1,7 +1,6 @@
 package likelion.edu.vn.health_care.security;
 
 
-
 import likelion.edu.vn.health_care.enumration.Authorities;
 import likelion.edu.vn.health_care.security.jwt.JwtRequestFilter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,8 +43,8 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http.csrf(csrf -> csrf.disable())
-                .authorizeHttpRequests(auth -> auth.requestMatchers("/api/user/login","/api/user/register").permitAll())
-                .authorizeHttpRequests(auth -> auth.requestMatchers("/api/user/doctor/**").hasAuthority(Authorities.Admin.name()))
+                .authorizeHttpRequests(auth -> auth.requestMatchers("/api/user/login", "/api/user/register").permitAll())
+                .authorizeHttpRequests(auth -> auth.requestMatchers("/api/user/doctor/**", "api/user/delete-user/").hasAuthority(Authorities.Admin.name()))
                 .authorizeHttpRequests(auth -> auth.requestMatchers("/api/user/get-user").authenticated())
                 .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(authenticationProvider())
