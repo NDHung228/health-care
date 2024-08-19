@@ -16,6 +16,7 @@ import java.io.IOException;
 
 @RestController
 @RequestMapping("api/user")
+@CrossOrigin
 public class UserController {
 
     @Autowired
@@ -81,7 +82,6 @@ public class UserController {
     @PostMapping("/update")
     public ResponseEntity<Object> update(@RequestBody UserRequest user, @RequestParam("image") MultipartFile multipartFile,
                                          Model model) {
-        System.err.println("This is function update");
         try {
             UserResponse userResponse = userInfoService.updateUser(user);
 
