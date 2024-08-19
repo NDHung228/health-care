@@ -6,6 +6,7 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 import lombok.*;
+import org.hibernate.annotations.DynamicUpdate;
 
 import java.util.Date;
 
@@ -13,6 +14,7 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "users")
+@DynamicUpdate
 public class UserEntity extends BaseEntity{
 
     @NonNull

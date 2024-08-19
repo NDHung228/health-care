@@ -17,6 +17,7 @@ public class UserResponse {
     private String gender;
     private Date dob;
     private String avatarUrl;
+    private int roleId;
 
     @Override
     public String toString() {
