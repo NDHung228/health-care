@@ -1,6 +1,7 @@
 package likelion.edu.vn.health_care.entity;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -14,12 +15,7 @@ import lombok.NonNull;
 @NoArgsConstructor
 public class MedicalRecordEntity extends BaseEntity{
 
-    @NonNull
-    private String appointmentId;
-
-    @NonNull
     private String diagnosis;
 
-    @NonNull
     private String treatment;
 }

@@ -1,9 +1,6 @@
 package likelion.edu.vn.health_care.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import likelion.edu.vn.health_care.enumration.AppointmentStatus;
 import likelion.edu.vn.health_care.enumration.AppointmentTime;
 import lombok.AllArgsConstructor;
@@ -20,11 +17,17 @@ import java.util.Date;
 @NoArgsConstructor
 public class AppointmentEntity extends BaseEntity {
 
-    @NonNull
-    private int patient_id;
+    @ManyToOne
+    @JoinColumn(name = "patient_id", nullable = false)
+    private UserEntity patient;
 
-    @NonNull
-    private int doctor_id;
+    @ManyToOne
+    @JoinColumn(name = "doctor_id", nullable = false)
+    private UserEntity doctor;
+
+    @OneToOne
+    @JoinColumn(name = "medical_record_id")
+    private MedicalRecordEntity medicalRecord;
 
     @NonNull
     private Date appointmentDate;
@@ -36,5 +39,4 @@ public class AppointmentEntity extends BaseEntity {
     @NonNull
     @Enumerated(EnumType.STRING)
     private AppointmentStatus appointmentStatus;
-
 }

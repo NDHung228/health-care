@@ -46,6 +46,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth.requestMatchers("/api/user/login", "/api/user/register").permitAll())
                 .authorizeHttpRequests(auth -> auth.requestMatchers("/api/user/doctor/**", "api/user/delete-user/").hasAuthority(Authorities.Admin.name()))
                 .authorizeHttpRequests(auth -> auth.requestMatchers("/api/user/get-user").authenticated())
+                .authorizeHttpRequests(auth -> auth.requestMatchers("/api/medical-records/**").authenticated())
                 .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(authenticationProvider())
                 .addFilterBefore(authFilter, UsernamePasswordAuthenticationFilter.class)
