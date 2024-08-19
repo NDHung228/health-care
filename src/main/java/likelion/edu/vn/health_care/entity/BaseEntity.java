@@ -23,4 +23,9 @@ public abstract class BaseEntity {
     protected void onCreate() {
         this.createTime = new Date();
     }
+
+    @PreUpdate
+    protected void onUpdate() {
+        this.updateTime = new Date();
+    }
 }

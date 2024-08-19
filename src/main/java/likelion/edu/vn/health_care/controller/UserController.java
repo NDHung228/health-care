@@ -3,11 +3,16 @@ package likelion.edu.vn.health_care.controller;
 import likelion.edu.vn.health_care.model.request.UserRequest;
 import likelion.edu.vn.health_care.model.response.UserResponse;
 import likelion.edu.vn.health_care.security.UserInfoService;
+import likelion.edu.vn.health_care.service.FileUploadService;
 import likelion.edu.vn.health_care.util.ResponseHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
 
 @RestController
 @RequestMapping("api/user")
@@ -16,10 +21,14 @@ public class UserController {
     @Autowired
     private UserInfoService userInfoService;
 
+    @Autowired
+    private FileUploadService fileUpload;
+
     @PostMapping("/register")
     public ResponseEntity<Object> register(@RequestBody UserRequest user) {
 
         try {
+
             String response = userInfoService.addUser(user);
 
             return ResponseHandler.generateResponse(HttpStatus.CREATED, false, "Register success", response);
@@ -69,9 +78,10 @@ public class UserController {
         }
     }
 
-
     @PostMapping("/update")
-    public ResponseEntity<Object> update(@RequestBody UserRequest user) {
+    public ResponseEntity<Object> update(@RequestBody UserRequest user, @RequestParam("image") MultipartFile multipartFile,
+                                         Model model) {
+        System.err.println("This is function update");
         try {
             UserResponse userResponse = userInfoService.updateUser(user);
 
@@ -99,6 +109,14 @@ public class UserController {
         } catch (Exception e) {
             return ResponseHandler.generateResponse(HttpStatus.BAD_REQUEST, true, e.getMessage(), null);
         }
+    }
+
+    @PostMapping("/upload-image")
+    public String uploadFile(@RequestParam("image") MultipartFile multipartFile,
+                             Model model) throws Exception {
+        String imageURL = fileUpload.uploadFile(multipartFile);
+        model.addAttribute("imageURL", imageURL);
+        return imageURL;
     }
 
 }

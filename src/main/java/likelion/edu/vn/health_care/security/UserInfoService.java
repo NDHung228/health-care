@@ -95,12 +95,23 @@ public class UserInfoService implements UserDetailsService {
         return null;
     }
 
+
+    public UserEntity getUserEntity() {
+        String email = SecurityUtils.getEmail();
+
+        Optional<UserEntity> user = repository.findByEmail(email);
+        return user.orElse(null);
+    }
+
     public UserResponse updateUser(UserRequest userRequest) throws Exception {
         try {
             UserResponse checkCurrentUser = getUserDetails();
 
             if (checkCurrentUser != null && checkCurrentUser.getEmail().equals(userRequest.getEmail())) {
                 UserEntity userInfo = userMapper.toUserEntity(userRequest);
+                userInfo.setId(checkCurrentUser.getId());
+
+                System.err.println("updateUser: " + userInfo);
 
                 userInfo = repository.save(userInfo);
                 return userMapper.toUserResponse(userInfo);
@@ -123,8 +134,7 @@ public class UserInfoService implements UserDetailsService {
         }
     }
 
-    public String getRoleName() {
-        String email = SecurityUtils.getEmail();
-        return repository.findByRoleName(email).orElse(null);
-    }
+   public UserEntity saveUser(UserEntity userEntity) throws Exception {
+        return repository.save(userEntity);
+   }
 }
