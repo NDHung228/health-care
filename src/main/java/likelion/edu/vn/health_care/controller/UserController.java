@@ -40,7 +40,7 @@ public class UserController {
             return ResponseHandler.generateResponse(HttpStatus.CREATED, false, "Register success", response);
 
         } catch (Exception e) {
-            return ResponseHandler.generateResponse(HttpStatus.BAD_REQUEST, true, e.getMessage(), null);
+            return ResponseHandler.generateResponse(HttpStatus.BAD_REQUEST, true, e.getMessage(), "Register failed");
 
         }
     }
@@ -66,11 +66,11 @@ public class UserController {
                 return ResponseHandler.generateResponse(HttpStatus.OK, false, "Login success", token);
             }
         } catch (Exception e) {
-            return ResponseHandler.generateResponse(HttpStatus.BAD_REQUEST, true, "Fail", e.getMessage());
+            return ResponseHandler.generateResponse(HttpStatus.BAD_REQUEST, true, "Login Fail", e.getMessage());
 
         }
 
-        return ResponseHandler.generateResponse(HttpStatus.BAD_REQUEST, true, "Fail", null);
+        return ResponseHandler.generateResponse(HttpStatus.BAD_REQUEST, true, "Login Fail", null);
 
     }
 
@@ -91,9 +91,9 @@ public class UserController {
             UserResponse userResponse = userInfoService.updateUser(user);
 
             if (userResponse != null) {
-                return ResponseHandler.generateResponse(HttpStatus.OK, false, "Success", userResponse);
+                return ResponseHandler.generateResponse(HttpStatus.OK, false, "Update Success", userResponse);
             }
-            return ResponseHandler.generateResponse(HttpStatus.BAD_REQUEST, true, "Fail", null);
+            return ResponseHandler.generateResponse(HttpStatus.BAD_REQUEST, true, "Update Fail", null);
         } catch (Exception e) {
             return ResponseHandler.generateResponse(HttpStatus.BAD_REQUEST, true, e.getMessage(), null);
         }
@@ -106,10 +106,10 @@ public class UserController {
 
             String response = userInfoService.deleteUser(id);
             if (response != null && !response.isEmpty()) {
-                return ResponseHandler.generateResponse(HttpStatus.OK, false, "Success", response);
+                return ResponseHandler.generateResponse(HttpStatus.OK, false, "Delete Success", response);
 
             }
-            return ResponseHandler.generateResponse(HttpStatus.BAD_REQUEST, true, "Fail", null);
+            return ResponseHandler.generateResponse(HttpStatus.BAD_REQUEST, true, "Delete Fail", null);
 
         } catch (Exception e) {
             return ResponseHandler.generateResponse(HttpStatus.BAD_REQUEST, true, e.getMessage(), null);
@@ -117,31 +117,31 @@ public class UserController {
     }
 
     @PostMapping("/upload-image")
-    public String uploadFile(@RequestParam("image") MultipartFile multipartFile,
+    public ResponseEntity<Object> uploadFile(@RequestParam("image") MultipartFile multipartFile,
                              Model model) throws Exception {
         String imageURL = fileUpload.uploadFile(multipartFile);
         model.addAttribute("imageURL", imageURL);
-        return imageURL;
+        return ResponseHandler.generateResponse(HttpStatus.OK, false, "Update image success", imageURL);
     }
 
     @GetMapping("/get-all-doctor")
     public ResponseEntity<Object> getAllDoctor() {
         List<UserResponse> listDoctor = userService.getAllDoctor();
         if (listDoctor != null) {
-            return ResponseHandler.generateResponse(HttpStatus.OK, false, "Success", listDoctor);
+            return ResponseHandler.generateResponse(HttpStatus.OK, false, "Get all doctor success", listDoctor);
 
         }
-        return ResponseHandler.generateResponse(HttpStatus.BAD_REQUEST, true, "Fail", null);
+        return ResponseHandler.generateResponse(HttpStatus.BAD_REQUEST, true, "Get all doctor fail", null);
     }
 
     @GetMapping("/get-all-patient")
     public ResponseEntity<Object> getAllPatient() {
         List<UserResponse> listDoctor = userService.getAllPatient();
         if (listDoctor != null) {
-            return ResponseHandler.generateResponse(HttpStatus.OK, false, "Success", listDoctor);
+            return ResponseHandler.generateResponse(HttpStatus.OK, false, "Get all patient success", listDoctor);
 
         }
-        return ResponseHandler.generateResponse(HttpStatus.BAD_REQUEST, true, "Fail", null);
+        return ResponseHandler.generateResponse(HttpStatus.BAD_REQUEST, true, "Get all patient fail", null);
     }
 
 }
