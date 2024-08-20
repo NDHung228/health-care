@@ -29,7 +29,7 @@ public abstract class UserMapper {
         userResponse.setId(user.getId());
         userResponse.setGender(user.getGender());
         userResponse.setRoleId(user.getRoleId());
-
+        userResponse.setAvatarUrl(user.getAvatarUrl());
         return userResponse;
     }
 
