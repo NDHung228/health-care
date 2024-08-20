@@ -3,9 +3,9 @@ package likelion.edu.vn.health_care.model.mapper;
 import likelion.edu.vn.health_care.entity.UserEntity;
 import likelion.edu.vn.health_care.model.request.UserRequest;
 import likelion.edu.vn.health_care.model.response.UserResponse;
-import org.mapstruct.Mapper;
+import org.springframework.stereotype.Component;
 
-@Mapper(componentModel = "spring")
+@Component
 public abstract class UserMapper {
 
     public UserEntity toUserEntity(UserRequest user){
