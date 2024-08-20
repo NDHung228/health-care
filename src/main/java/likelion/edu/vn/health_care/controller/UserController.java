@@ -50,7 +50,7 @@ public class UserController {
 
         UserResponse userResponse = userInfoService.getUserDetails();
         if (userResponse != null) {
-            return ResponseEntity.ok(userResponse);
+            return ResponseHandler.generateResponse(HttpStatus.OK, false, "Success", userResponse);
         }
         return ResponseHandler.generateResponse(HttpStatus.BAD_REQUEST, true, "Error", null);
 
@@ -91,7 +91,7 @@ public class UserController {
             UserResponse userResponse = userInfoService.updateUser(user);
 
             if (userResponse != null) {
-                return ResponseEntity.ok(userResponse);
+                return ResponseHandler.generateResponse(HttpStatus.OK, false, "Success", userResponse);
             }
             return ResponseHandler.generateResponse(HttpStatus.BAD_REQUEST, true, "Fail", null);
         } catch (Exception e) {
@@ -106,7 +106,8 @@ public class UserController {
 
             String response = userInfoService.deleteUser(id);
             if (response != null && !response.isEmpty()) {
-                return ResponseEntity.ok(response);
+                return ResponseHandler.generateResponse(HttpStatus.OK, false, "Success", response);
+
             }
             return ResponseHandler.generateResponse(HttpStatus.BAD_REQUEST, true, "Fail", null);
 
@@ -127,7 +128,8 @@ public class UserController {
     public ResponseEntity<Object> getAllDoctor() {
         List<UserResponse> listDoctor = userService.getAllDoctor();
         if (listDoctor != null) {
-            return ResponseEntity.ok(listDoctor);
+            return ResponseHandler.generateResponse(HttpStatus.OK, false, "Success", listDoctor);
+
         }
         return ResponseHandler.generateResponse(HttpStatus.BAD_REQUEST, true, "Fail", null);
     }
@@ -136,7 +138,8 @@ public class UserController {
     public ResponseEntity<Object> getAllPatient() {
         List<UserResponse> listDoctor = userService.getAllPatient();
         if (listDoctor != null) {
-            return ResponseEntity.ok(listDoctor);
+            return ResponseHandler.generateResponse(HttpStatus.OK, false, "Success", listDoctor);
+
         }
         return ResponseHandler.generateResponse(HttpStatus.BAD_REQUEST, true, "Fail", null);
     }
