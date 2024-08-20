@@ -8,7 +8,6 @@ import java.util.List;
 public interface UserService extends BaseService<UserEntity> {
 
     List<UserResponse> getAllUser();
-
     List<UserResponse> getAllDoctor();
     List<UserResponse> getAllPatient();
 
