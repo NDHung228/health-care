@@ -113,12 +113,12 @@ public class AppointmentServiceImpl implements AppointmentService {
             System.err.println("Appointment created with time: " + appointmentTime);
 
             // Fetch the available doctor ID
-            Optional<UserEntity> availableDoctorId = appointmentRepository.findAvailableDoctorId(appointmentDate, appointmentTime);
+            Optional<Integer> availableDoctorId = appointmentRepository.findAvailableDoctorId(appointmentDate, appointmentTime);
             System.err.println("Doctor ID available: " + availableDoctorId);
 
             if (availableDoctorId.isPresent()) {
                 AppointmentEntity appointment = new AppointmentEntity();
-                appointment.setDoctor(availableDoctorId.get());
+//                appointment.setDoctor(availableDoctorId.get());
                 appointment.setAppointmentDate(appointmentRequest.getAppointmentDate());
                 appointment.setAppointmentTime(appointmentRequest.getAppointmentTime());
                 return appointmentRepository.save(appointment);
