@@ -86,5 +86,23 @@ public class UserImpl implements UserService {
         return null;
     }
 
+    @Override
+    public List<UserResponse> searchName(String name) {
+        System.err.println("searchName: " + name);
+        Optional<List<UserEntity>> listUserEntity = userRepository.searchByName(name);
+
+        if (listUserEntity.isEmpty()) {
+            return null;
+        }
+        List<UserResponse> userResponseList = new ArrayList<>();
+
+        for (UserEntity userEntity : listUserEntity.get()) {
+            userResponseList.add(userMapper.toUserResponse(userEntity));
+        }
+
+        return userResponseList;
+
+    }
+
 
 }

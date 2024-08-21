@@ -13,7 +13,6 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -118,7 +117,7 @@ public class UserController {
 
     @PostMapping("/upload-image")
     public ResponseEntity<Object> uploadFile(@RequestParam("image") MultipartFile multipartFile,
-                             Model model) throws Exception {
+                                             Model model) throws Exception {
         String imageURL = fileUpload.uploadFile(multipartFile);
         model.addAttribute("imageURL", imageURL);
         return ResponseHandler.generateResponse(HttpStatus.OK, false, "Update image success", imageURL);
@@ -142,6 +141,15 @@ public class UserController {
 
         }
         return ResponseHandler.generateResponse(HttpStatus.BAD_REQUEST, true, "Get all patient fail", null);
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<Object> search(@RequestParam String name) {
+        List<UserResponse> listDoctor = userService.searchName(name);
+        if (listDoctor != null) {
+            return ResponseHandler.generateResponse(HttpStatus.OK, false, "Search success", listDoctor);
+        }
+        return ResponseHandler.generateResponse(HttpStatus.BAD_REQUEST, true, "The user you are looking for was not found.", null);
     }
 
 }
