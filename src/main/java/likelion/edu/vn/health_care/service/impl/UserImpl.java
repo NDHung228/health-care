@@ -1,11 +1,13 @@
 package likelion.edu.vn.health_care.service.impl;
 
 import likelion.edu.vn.health_care.entity.UserEntity;
+import likelion.edu.vn.health_care.model.dto.ResultPaginationDTO;
 import likelion.edu.vn.health_care.model.mapper.UserMapper;
 import likelion.edu.vn.health_care.model.response.UserResponse;
 import likelion.edu.vn.health_care.repository.UserRepository;
 import likelion.edu.vn.health_care.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -44,6 +46,11 @@ public class UserImpl implements UserService {
     @Override
     public Optional<UserEntity> findById(Integer id) {
         return Optional.empty();
+    }
+
+    @Override
+    public ResultPaginationDTO handleGetAll(Pageable pageable) {
+        return null;
     }
 
     @Override
