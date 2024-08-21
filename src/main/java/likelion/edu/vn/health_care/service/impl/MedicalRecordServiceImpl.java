@@ -1,9 +1,13 @@
 package likelion.edu.vn.health_care.service.impl;
 
 import likelion.edu.vn.health_care.entity.MedicalRecordEntity;
+import likelion.edu.vn.health_care.model.dto.Meta;
+import likelion.edu.vn.health_care.model.dto.ResultPaginationDTO;
 import likelion.edu.vn.health_care.repository.MedicalRecordRepository;
 import likelion.edu.vn.health_care.service.MedicalRecordService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -37,6 +41,24 @@ public class MedicalRecordServiceImpl implements MedicalRecordService {
     @Override
     public Iterable<MedicalRecordEntity> findAll() {
         return medicalRecordRepository.findAll();
+    }
+
+    @Override
+    public ResultPaginationDTO handleGetAll(Pageable pageable) {
+        Page<MedicalRecordEntity> pMedicalRecord = this.medicalRecordRepository.findAll(pageable);
+
+        ResultPaginationDTO rs = new ResultPaginationDTO();
+        Meta mt = new Meta();
+
+        mt.setPage(pMedicalRecord.getNumber() + 1);
+        mt.setPageSize(pMedicalRecord.getSize());
+
+        mt.setPages(pMedicalRecord.getTotalPages());
+        mt.setTotal(pMedicalRecord.getTotalElements());
+
+        rs.setMeta(mt);
+        rs.setResult(pMedicalRecord.getContent());
+        return rs;
     }
 
     @Override
