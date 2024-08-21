@@ -20,4 +20,8 @@ public interface UserRepository extends JpaRepository<UserEntity, Integer> {
     Optional<String> findByRoleName(String email);
 
     Optional<List<UserEntity>> findAllByRoleId(int id);
+
+    @Query(value = "select * from users u  " +
+            "where u.full_name like %?1%", nativeQuery = true)
+    Optional<List<UserEntity>> searchByName(String name);
 }
