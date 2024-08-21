@@ -45,7 +45,7 @@ public class UserImpl implements UserService {
 
     @Override
     public Optional<UserEntity> findById(Integer id) {
-        return Optional.empty();
+        return userRepository.findById(id);
     }
 
     @Override

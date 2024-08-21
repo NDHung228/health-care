@@ -2,11 +2,13 @@ package likelion.edu.vn.health_care.service.impl;
 
 import likelion.edu.vn.health_care.entity.AppointmentEntity;
 import likelion.edu.vn.health_care.entity.UserEntity;
+import likelion.edu.vn.health_care.enumration.AppointmentStatus;
 import likelion.edu.vn.health_care.model.dto.Meta;
 import likelion.edu.vn.health_care.model.dto.ResultPaginationDTO;
 import likelion.edu.vn.health_care.model.request.AppointmentRequest;
 import likelion.edu.vn.health_care.repository.AppointmentRepository;
 import likelion.edu.vn.health_care.service.AppointmentService;
+import likelion.edu.vn.health_care.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -19,6 +21,9 @@ public class AppointmentServiceImpl implements AppointmentService {
 
     @Autowired
     private AppointmentRepository appointmentRepository;
+
+    @Autowired
+    private UserService userService;
 
     @Override
     public AppointmentEntity create(AppointmentEntity appointment) {
@@ -116,12 +121,22 @@ public class AppointmentServiceImpl implements AppointmentService {
             Optional<Integer> availableDoctorId = appointmentRepository.findAvailableDoctorId(appointmentDate, appointmentTime);
             System.err.println("Doctor ID available: " + availableDoctorId);
 
+
             if (availableDoctorId.isPresent()) {
+                Optional<UserEntity> userEntity = userService.findById(availableDoctorId.get());
+                System.err.println("UserEntity: " + userEntity);
                 AppointmentEntity appointment = new AppointmentEntity();
-//                appointment.setDoctor(availableDoctorId.get());
-                appointment.setAppointmentDate(appointmentRequest.getAppointmentDate());
-                appointment.setAppointmentTime(appointmentRequest.getAppointmentTime());
-                return appointmentRepository.save(appointment);
+
+                if (userEntity.isPresent()) {
+                    UserEntity user = userEntity.get();
+                    appointment.setDoctor(user);
+                    appointment.setPatient(user);
+                    appointment.setAppointmentStatus(AppointmentStatus.Pending);
+                    appointment.setAppointmentDate(appointmentRequest.getAppointmentDate());
+                    appointment.setAppointmentTime(appointmentRequest.getAppointmentTime());
+                    return appointmentRepository.save(appointment);
+                }
+
 
             }
             return null;
