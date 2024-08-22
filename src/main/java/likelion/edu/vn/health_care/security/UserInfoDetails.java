@@ -5,7 +5,6 @@ import likelion.edu.vn.health_care.enumration.Authorities;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -22,11 +21,11 @@ public class UserInfoDetails implements UserDetails {
 
         authorities = new ArrayList<GrantedAuthority>();
         if (userInfo.getRoleId() == 1) {
-            authorities.add(new SimpleGrantedAuthority(Authorities.Patient.name()));
+            authorities.add(new SimpleGrantedAuthority(Authorities.Admin.name()));
         } else if (userInfo.getRoleId() == 2) {
             authorities.add(new SimpleGrantedAuthority(Authorities.Doctor.name()));
         } else {
-            authorities.add(new SimpleGrantedAuthority(Authorities.Admin.name()));
+            authorities.add(new SimpleGrantedAuthority(Authorities.Patient.name()));
         }
     }
 
