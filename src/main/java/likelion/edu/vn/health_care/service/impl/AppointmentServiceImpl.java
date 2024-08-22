@@ -3,15 +3,18 @@ package likelion.edu.vn.health_care.service.impl;
 import likelion.edu.vn.health_care.entity.AppointmentEntity;
 import likelion.edu.vn.health_care.entity.UserEntity;
 import likelion.edu.vn.health_care.enumration.AppointmentStatus;
+import likelion.edu.vn.health_care.exception.ResourceNotFoundException;
 import likelion.edu.vn.health_care.model.dto.Meta;
 import likelion.edu.vn.health_care.model.dto.ResultPaginationDTO;
 import likelion.edu.vn.health_care.model.request.AppointmentRequest;
 import likelion.edu.vn.health_care.repository.AppointmentRepository;
+import likelion.edu.vn.health_care.security.UserInfoService;
 import likelion.edu.vn.health_care.service.AppointmentService;
 import likelion.edu.vn.health_care.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -23,7 +26,7 @@ public class AppointmentServiceImpl implements AppointmentService {
     private AppointmentRepository appointmentRepository;
 
     @Autowired
-    private UserService userService;
+    private UserInfoService userInfoService;
 
     @Override
     public AppointmentEntity create(AppointmentEntity appointment) {
@@ -51,9 +54,18 @@ public class AppointmentServiceImpl implements AppointmentService {
     }
 
     @Override
-    public void delete(AppointmentEntity appointmentEntity) {
-
+    public void delete(int id) {
+        try {
+            if (appointmentRepository.existsById(id)) {
+                appointmentRepository.deleteById(id);
+            } else {
+                throw new RuntimeException("Appointment not found with id: " + id);
+            }
+        } catch (Exception e) {
+            throw new RuntimeException("Error deleting appointment: " + e.getMessage(), e);
+        }
     }
+
 
     @Override
     public Iterable<AppointmentEntity> findAll() {
@@ -92,19 +104,6 @@ public class AppointmentServiceImpl implements AppointmentService {
     }
 
     @Override
-    public void deleteById(Integer id) {
-        try {
-            if (appointmentRepository.existsById(id)) {
-                appointmentRepository.deleteById(id);
-            } else {
-                throw new RuntimeException("Appointment not found with id: " + id);
-            }
-        } catch (Exception e) {
-            throw new RuntimeException("Error deleting appointment: " + e.getMessage(), e);
-        }
-    }
-
-    @Override
     public AppointmentEntity create(AppointmentRequest appointmentRequest) {
         try {
             // Convert date and time to the appropriate format if necessary
@@ -118,38 +117,18 @@ public class AppointmentServiceImpl implements AppointmentService {
             System.err.println("Appointment created with time: " + appointmentTime);
 
             // Fetch the available doctor ID
-            Optional<Integer> availableDoctorId = appointmentRepository.findAvailableDoctorId(appointmentDate, appointmentTime);
+            Integer availableDoctorId = appointmentRepository.findAvailableDoctorId(appointmentDate, appointmentTime)
+                    .orElseThrow(() -> new UsernameNotFoundException("Don't have doctor "));
             System.err.println("Doctor ID available: " + availableDoctorId);
 
+            AppointmentEntity appointment = new AppointmentEntity();
+            appointment.setDoctorId(availableDoctorId);
+            appointment.setPatientId(userInfoService.getUserId());
+            appointment.setAppointmentStatus(AppointmentStatus.Pending);
+            appointment.setAppointmentDate(appointmentRequest.getAppointmentDate());
+            appointment.setAppointmentTime(appointmentRequest.getAppointmentTime());
+            return appointmentRepository.save(appointment);
 
-            if (availableDoctorId.isPresent()) {
-                Optional<UserEntity> userEntity = userService.findById(availableDoctorId.get());
-                System.err.println("UserEntity: " + userEntity);
-                AppointmentEntity appointment = new AppointmentEntity();
-
-                if (userEntity.isPresent()) {
-                    UserEntity user = userEntity.get();
-                    appointment.setDoctor(user);
-                    appointment.setPatient(user);
-                    appointment.setAppointmentStatus(AppointmentStatus.Pending);
-                    appointment.setAppointmentDate(appointmentRequest.getAppointmentDate());
-                    appointment.setAppointmentTime(appointmentRequest.getAppointmentTime());
-                    return appointmentRepository.save(appointment);
-                }
-
-
-            }
-            return null;
-
-            // Create the AppointmentEntity
-//            AppointmentEntity appointment = new AppointmentEntity();
-//            appointment.setDoctorId(availableDoctorId);
-//            appointment.setAppointmentDate(appointmentRequest.getAppointmentDate());
-//            appointment.setAppointmentTime(appointmentRequest.getAppointmentTime());
-            // Set other necessary fields for the appointment
-            // ...
-
-            // Save the appointment
 
         } catch (Exception e) {
             throw new RuntimeException("Error creating appointment: " + e.getMessage(), e);

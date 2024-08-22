@@ -103,6 +103,10 @@ public class UserInfoService implements UserDetailsService {
         return user.orElse(null);
     }
 
+    public int getUserId() {
+        return getUserEntity().getId();
+    }
+
     public UserResponse updateUser(UserRequest userRequest) throws Exception {
         try {
             UserResponse checkCurrentUser = getUserDetails();

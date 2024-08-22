@@ -34,9 +34,16 @@ public class MedicalRecordServiceImpl implements MedicalRecordService {
     }
 
     @Override
-    public void delete(MedicalRecordEntity medicalRecordEntity) {
-        medicalRecordRepository.delete(medicalRecordEntity);
+    public void delete(int id) {
+        Optional<MedicalRecordEntity> existingRecord = medicalRecordRepository.findById(id);
+        if (existingRecord.isPresent()) {
+            // Xóa hồ sơ bệnh án
+            medicalRecordRepository.deleteById(id);
+        } else {
+            throw new RuntimeException("Medical record not found with id: " + id);
+        }
     }
+
 
     @Override
     public Iterable<MedicalRecordEntity> findAll() {
@@ -64,16 +71,5 @@ public class MedicalRecordServiceImpl implements MedicalRecordService {
     @Override
     public Optional<MedicalRecordEntity> findById(Integer id) {
         return medicalRecordRepository.findById(id);
-    }
-
-    @Override
-    public void deleteById(Integer id) {
-        Optional<MedicalRecordEntity> existingRecord = medicalRecordRepository.findById(id);
-        if (existingRecord.isPresent()) {
-            // Xóa hồ sơ bệnh án
-            medicalRecordRepository.deleteById(id);
-        } else {
-            throw new RuntimeException("Medical record not found with id: " + id);
-        }
     }
 }

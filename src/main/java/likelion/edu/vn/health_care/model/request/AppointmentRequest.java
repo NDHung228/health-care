@@ -3,6 +3,7 @@ package likelion.edu.vn.health_care.model.request;
 import likelion.edu.vn.health_care.enumration.AppointmentTime;
 import lombok.*;
 
+import java.time.LocalDate;
 import java.util.Date;
 
 @Getter
@@ -11,6 +12,6 @@ import java.util.Date;
 @NoArgsConstructor
 @Data
 public class AppointmentRequest {
-    private Date appointmentDate;
+    private LocalDate appointmentDate;
     private AppointmentTime appointmentTime;
 }

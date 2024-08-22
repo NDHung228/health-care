@@ -75,7 +75,7 @@ public class AppointmentController {
     @DeleteMapping("/{id}")
     public ResponseEntity<Object> deleteAppointment(@PathVariable Integer id) {
         try {
-            appointmentService.deleteById(id);
+            appointmentService.delete(id);
             return ResponseHandler.generateResponse(HttpStatus.OK, false, "Appointment deleted successfully", null);
         } catch (Exception e) {
             return ResponseHandler.generateResponse(HttpStatus.BAD_REQUEST, true, e.getMessage(), null);
