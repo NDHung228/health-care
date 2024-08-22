@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.Optional;
 
@@ -20,7 +21,7 @@ public interface AppointmentRepository extends JpaRepository<AppointmentEntity, 
             "    SELECT a.doctor_id " +
             "    FROM appointments a " +
             "    WHERE a.appointment_date::text = ?1 " +
-            "    AND a.appointment_time = ?2 " +
+            "    AND a.appointment_time = ?2 and a.appointment_status != 'Cancel' " +
             ") " +
             "AND u.role_id = 2 " +
             "LIMIT 1;", nativeQuery = true)

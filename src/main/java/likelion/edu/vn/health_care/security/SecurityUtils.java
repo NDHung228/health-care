@@ -25,4 +25,5 @@ public class SecurityUtils {
         return Optional.ofNullable(SecurityUtils.extractPrincipal(securityContext.getAuthentication())).orElse(null);
     }
 
+
 }
