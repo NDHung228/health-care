@@ -110,16 +110,10 @@ public class AppointmentServiceImpl implements AppointmentService {
             String appointmentDate = appointmentRequest.getAppointmentDate().toString();
             String appointmentTime = appointmentRequest.getAppointmentTime().toString();
 
-            // Log for debugging purposes
-            System.err.println("Appointment1 created with date: " + appointmentRequest.getAppointmentDate());
-            System.err.println("Appointment2 created with date: " + appointmentDate);
-
-            System.err.println("Appointment created with time: " + appointmentTime);
 
             // Fetch the available doctor ID
             Integer availableDoctorId = appointmentRepository.findAvailableDoctorId(appointmentDate, appointmentTime)
                     .orElseThrow(() -> new UsernameNotFoundException("Don't have doctor "));
-            System.err.println("Doctor ID available: " + availableDoctorId);
 
             AppointmentEntity appointment = new AppointmentEntity();
             appointment.setDoctorId(availableDoctorId);
@@ -128,7 +122,6 @@ public class AppointmentServiceImpl implements AppointmentService {
             appointment.setAppointmentDate(appointmentRequest.getAppointmentDate());
             appointment.setAppointmentTime(appointmentRequest.getAppointmentTime());
             return appointmentRepository.save(appointment);
-
 
         } catch (Exception e) {
             throw new RuntimeException("Error creating appointment: " + e.getMessage(), e);

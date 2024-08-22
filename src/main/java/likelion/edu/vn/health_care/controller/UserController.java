@@ -98,9 +98,8 @@ public class UserController {
         }
     }
 
-    @DeleteMapping("/delete/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<Object> deleteUser(@PathVariable Integer id) {
-        System.err.println("Delete " + id);
         try {
 
             String response = userInfoService.deleteUser(id);
