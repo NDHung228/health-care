@@ -1,16 +1,13 @@
 package likelion.edu.vn.health_care.service.impl;
 
 import likelion.edu.vn.health_care.entity.AppointmentEntity;
-import likelion.edu.vn.health_care.entity.UserEntity;
 import likelion.edu.vn.health_care.enumration.AppointmentStatus;
-import likelion.edu.vn.health_care.exception.ResourceNotFoundException;
 import likelion.edu.vn.health_care.model.dto.Meta;
 import likelion.edu.vn.health_care.model.dto.ResultPaginationDTO;
 import likelion.edu.vn.health_care.model.request.AppointmentRequest;
 import likelion.edu.vn.health_care.repository.AppointmentRepository;
 import likelion.edu.vn.health_care.security.UserInfoService;
 import likelion.edu.vn.health_care.service.AppointmentService;
-import likelion.edu.vn.health_care.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -117,7 +114,13 @@ public class AppointmentServiceImpl implements AppointmentService {
 
             AppointmentEntity appointment = new AppointmentEntity();
             appointment.setDoctorId(availableDoctorId);
-            appointment.setPatientId(userInfoService.getUserId());
+
+            if (appointmentRequest.getPatientId() == 0) {
+                appointment.setPatientId(userInfoService.getUserId());
+            } else {
+                appointment.setPatientId(appointmentRequest.getPatientId());
+            }
+
             appointment.setAppointmentStatus(AppointmentStatus.Pending);
             appointment.setAppointmentDate(appointmentRequest.getAppointmentDate());
             appointment.setAppointmentTime(appointmentRequest.getAppointmentTime());
