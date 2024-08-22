@@ -8,6 +8,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 
+import java.time.LocalDate;
 import java.util.Date;
 
 @Entity
@@ -27,7 +28,7 @@ public class AppointmentEntity extends BaseEntity {
     private Integer medicalRecordId;
 
     @NonNull
-    private Date appointmentDate;
+    private LocalDate appointmentDate;
 
     @NonNull
     @Enumerated(EnumType.STRING)

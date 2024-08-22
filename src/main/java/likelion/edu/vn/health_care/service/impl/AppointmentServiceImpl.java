@@ -128,7 +128,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 //                    appointment.setDoctor(user);
 //                    appointment.setPatient(user);
                     appointment.setAppointmentStatus(AppointmentStatus.Pending);
-                    appointment.setAppointmentDate(appointmentRequest.getAppointmentDate());
+//                    appointment.setAppointmentDate(appointmentRequest.getAppointmentDate());
                     appointment.setAppointmentTime(appointmentRequest.getAppointmentTime());
                     return appointmentRepository.save(appointment);
                 }
