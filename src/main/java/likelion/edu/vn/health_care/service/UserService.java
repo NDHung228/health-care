@@ -11,4 +11,5 @@ public interface UserService extends BaseService<UserEntity> {
     List<UserResponse> getAllDoctor();
     List<UserResponse> getAllPatient();
     List<UserResponse> searchName(String name);
+    UserResponse getUserById(int id);
 }

@@ -2,6 +2,7 @@ package likelion.edu.vn.health_care.controller;
 
 import likelion.edu.vn.health_care.entity.AppointmentEntity;
 import likelion.edu.vn.health_care.entity.MedicalRecordEntity;
+import likelion.edu.vn.health_care.model.request.AppointmentRequest;
 import likelion.edu.vn.health_care.service.AppointmentService;
 import likelion.edu.vn.health_care.util.ResponseHandler;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +23,7 @@ public class AppointmentController {
     private AppointmentService appointmentService;
 
     @PostMapping
-    public ResponseEntity<Object> createAppointment(@RequestBody AppointmentEntity appointment) {
+    public ResponseEntity<Object> createAppointment(@RequestBody AppointmentRequest appointment) {
         try {
             AppointmentEntity createdAppointment = appointmentService.create(appointment);
             return ResponseHandler.generateResponse(HttpStatus.CREATED, false, "Appointment created successfully", createdAppointment);

@@ -1,6 +1,7 @@
 package likelion.edu.vn.health_care.service.impl;
 
 import likelion.edu.vn.health_care.entity.UserEntity;
+import likelion.edu.vn.health_care.exception.ResourceNotFoundException;
 import likelion.edu.vn.health_care.model.dto.ResultPaginationDTO;
 import likelion.edu.vn.health_care.model.mapper.UserMapper;
 import likelion.edu.vn.health_care.model.response.UserResponse;
@@ -45,7 +46,9 @@ public class UserImpl implements UserService {
 
     @Override
     public Optional<UserEntity> findById(Integer id) {
-        return Optional.empty();
+        UserEntity user = userRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Not find user by id", "id", id));
+        return Optional.ofNullable(user);
     }
 
     @Override
@@ -109,6 +112,12 @@ public class UserImpl implements UserService {
 
         return userResponseList;
 
+    }
+
+    @Override
+    public UserResponse getUserById(int id) {
+        return userMapper.toUserResponse(userRepository.findById(id).orElseThrow(()
+                -> new ResourceNotFoundException("Not found", "id", id)));
     }
 
 
