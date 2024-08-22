@@ -84,8 +84,8 @@ public class UserController {
     }
 
     @PostMapping("/update")
-    public ResponseEntity<Object> update(@RequestBody UserRequest user, @RequestParam("image") MultipartFile multipartFile,
-                                         Model model) {
+    public ResponseEntity<Object> update(@RequestBody UserRequest user, @RequestParam("image") MultipartFile multipartFile
+    ) {
         try {
             UserResponse userResponse = userInfoService.updateUser(user);
 
@@ -150,6 +150,17 @@ public class UserController {
             return ResponseHandler.generateResponse(HttpStatus.OK, false, "Search success", listDoctor);
         }
         return ResponseHandler.generateResponse(HttpStatus.BAD_REQUEST, true, "The user you are looking for was not found.", null);
+    }
+
+    @GetMapping("/find-user")
+    public ResponseEntity<Object> getUserById(@RequestParam int id) {
+        System.err.println("This here");
+        UserResponse userResponse = userService.getUserById(id);
+
+        if (userResponse != null) {
+            return ResponseHandler.generateResponse(HttpStatus.OK, false, "Get success", userResponse);
+        }
+        return ResponseHandler.generateResponse(HttpStatus.BAD_REQUEST, true, "Get fail", null);
     }
 
 }
