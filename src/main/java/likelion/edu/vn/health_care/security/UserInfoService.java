@@ -48,7 +48,7 @@ public class UserInfoService implements UserDetailsService {
     public String addUser(UserRequest userRequest) throws Exception {
         UserEntity userInfo = userMapper.toUserEntity(userRequest);
         userInfo.setPassword(encoder.encode(userRequest.getPassword()));
-        userInfo.setRoleId(1);
+        userInfo.setRoleId(3);
         try {
             repository.save(userInfo);
             return "register patient success";
