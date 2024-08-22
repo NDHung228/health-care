@@ -24,7 +24,10 @@ public class AppointmentController {
 
     @PostMapping
     public ResponseEntity<Object> createAppointment(@RequestBody AppointmentRequest appointment) {
+        System.err.println("This here");
+
         try {
+
             AppointmentEntity createdAppointment = appointmentService.create(appointment);
             return ResponseHandler.generateResponse(HttpStatus.CREATED, false, "Appointment created successfully", createdAppointment);
         } catch (Exception e) {

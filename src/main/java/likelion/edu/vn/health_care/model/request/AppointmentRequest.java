@@ -14,4 +14,5 @@ import java.util.Date;
 public class AppointmentRequest {
     private LocalDate appointmentDate;
     private AppointmentTime appointmentTime;
+    private int patientId;
 }
