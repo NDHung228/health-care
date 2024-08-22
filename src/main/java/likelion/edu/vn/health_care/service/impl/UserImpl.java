@@ -35,7 +35,7 @@ public class UserImpl implements UserService {
     }
 
     @Override
-    public void delete(UserEntity userEntity) {
+    public void delete(int id) {
 
     }
 

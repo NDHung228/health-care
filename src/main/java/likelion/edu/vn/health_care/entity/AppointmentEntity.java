@@ -17,17 +17,14 @@ import java.util.Date;
 @NoArgsConstructor
 public class AppointmentEntity extends BaseEntity {
 
-    @ManyToOne
-    @JoinColumn(name = "patient_id", nullable = false)
-    private UserEntity patient;
+    @Column(name = "patient_id", nullable = false)
+    private Integer patientId;
 
-    @ManyToOne
-    @JoinColumn(name = "doctor_id", nullable = false)
-    private UserEntity doctor;
+    @Column(name = "doctor_id", nullable = false)
+    private Integer doctorId;
 
-    @OneToOne
-    @JoinColumn(name = "medical_record_id")
-    private MedicalRecordEntity medicalRecord;
+    @Column(name = "medical_record_id")
+    private Integer medicalRecordId;
 
     @NonNull
     private Date appointmentDate;

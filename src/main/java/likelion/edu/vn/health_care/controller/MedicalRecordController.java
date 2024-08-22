@@ -74,7 +74,7 @@ public class MedicalRecordController {
     @DeleteMapping("/{id}")
     public ResponseEntity<Object> deleteMedicalRecord(@PathVariable Integer id) {
         try {
-            medicalRecordService.deleteById(id);
+            medicalRecordService.delete(id);
             return ResponseHandler.generateResponse(HttpStatus.OK, false, "Record deleted successfully", null);
         } catch (Exception e) {
             return ResponseHandler.generateResponse(HttpStatus.BAD_REQUEST, true, e.getMessage(), null);
