@@ -8,7 +8,7 @@ import java.util.Optional;
 public interface BaseService<T> {
     T create(T t);
     T update(T t);
-    void delete(T t);
+    void delete(int id);
     Iterable<T> findAll();
     Optional<T> findById(Integer id);
     ResultPaginationDTO handleGetAll(Pageable pageable);

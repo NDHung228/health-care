@@ -51,9 +51,18 @@ public class AppointmentServiceImpl implements AppointmentService {
     }
 
     @Override
-    public void delete(AppointmentEntity appointmentEntity) {
-
+    public void delete(int id) {
+        try {
+            if (appointmentRepository.existsById(id)) {
+                appointmentRepository.deleteById(id);
+            } else {
+                throw new RuntimeException("Appointment not found with id: " + id);
+            }
+        } catch (Exception e) {
+            throw new RuntimeException("Error deleting appointment: " + e.getMessage(), e);
+        }
     }
+
 
     @Override
     public Iterable<AppointmentEntity> findAll() {
@@ -92,19 +101,6 @@ public class AppointmentServiceImpl implements AppointmentService {
     }
 
     @Override
-    public void deleteById(Integer id) {
-        try {
-            if (appointmentRepository.existsById(id)) {
-                appointmentRepository.deleteById(id);
-            } else {
-                throw new RuntimeException("Appointment not found with id: " + id);
-            }
-        } catch (Exception e) {
-            throw new RuntimeException("Error deleting appointment: " + e.getMessage(), e);
-        }
-    }
-
-    @Override
     public AppointmentEntity create(AppointmentRequest appointmentRequest) {
         try {
             // Convert date and time to the appropriate format if necessary
@@ -129,8 +125,8 @@ public class AppointmentServiceImpl implements AppointmentService {
 
                 if (userEntity.isPresent()) {
                     UserEntity user = userEntity.get();
-                    appointment.setDoctor(user);
-                    appointment.setPatient(user);
+//                    appointment.setDoctor(user);
+//                    appointment.setPatient(user);
                     appointment.setAppointmentStatus(AppointmentStatus.Pending);
                     appointment.setAppointmentDate(appointmentRequest.getAppointmentDate());
                     appointment.setAppointmentTime(appointmentRequest.getAppointmentTime());
