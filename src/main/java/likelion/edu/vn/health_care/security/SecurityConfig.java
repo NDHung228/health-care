@@ -44,7 +44,7 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http.csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth.requestMatchers("/api/user/login", "/api/user/register").permitAll())
-                .authorizeHttpRequests(auth -> auth.requestMatchers("/api/user/doctor/**", "api/user/delete-user/",
+                .authorizeHttpRequests(auth -> auth.requestMatchers("/api/user/doctor/**", "api/**",
                         "api/user/get-all-doctor", "api/user/get-all-patient","/api/user/find-user").hasAuthority(Authorities.Admin.name()))
                 .authorizeHttpRequests(auth -> auth.requestMatchers("/api/user/get-user", "api/user/update",
                         "api/user/upload-image", "/api/medical-records/**").authenticated())
