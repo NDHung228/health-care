@@ -1,14 +1,10 @@
 package likelion.edu.vn.health_care.repository;
 
 import likelion.edu.vn.health_care.entity.AppointmentEntity;
-import likelion.edu.vn.health_care.entity.UserEntity;
-import likelion.edu.vn.health_care.enumration.AppointmentTime;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
-import java.time.LocalDate;
-import java.util.Date;
 import java.util.Optional;
 
 @Repository
@@ -26,8 +22,6 @@ public interface AppointmentRepository extends JpaRepository<AppointmentEntity, 
             "AND u.role_id = 2 " +
             "LIMIT 1;", nativeQuery = true)
     Optional<Integer> findAvailableDoctorId(String appointmentDate, String appointmentTime);
-
-
 
 
 }
