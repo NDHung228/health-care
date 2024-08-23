@@ -5,6 +5,7 @@ import likelion.edu.vn.health_care.model.dto.AppointmentDetailDTO;
 import likelion.edu.vn.health_care.model.request.AppointmentRequest;
 import likelion.edu.vn.health_care.model.response.AppointmentTimeResponse;
 import java.util.List;
+import java.util.Optional;
 
 public interface AppointmentService extends BaseService<AppointmentEntity> {
     AppointmentEntity create(AppointmentRequest appointmentRequest);

@@ -1,6 +1,7 @@
 package likelion.edu.vn.health_care.controller;
 
 import likelion.edu.vn.health_care.model.request.UserRequest;
+import likelion.edu.vn.health_care.model.request.UserUpdateRequest;
 import likelion.edu.vn.health_care.model.response.UserResponse;
 import likelion.edu.vn.health_care.security.UserInfoService;
 import likelion.edu.vn.health_care.service.FileUploadService;
@@ -88,7 +89,7 @@ public class UserController {
     }
 
     @PutMapping("/update")
-    public ResponseEntity<Object> update(@RequestBody UserRequest user) {
+    public ResponseEntity<Object> update(@RequestBody UserUpdateRequest user) {
         try {
             UserResponse userResponse = userInfoService.updateUser(user);
 

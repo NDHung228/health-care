@@ -2,6 +2,7 @@ package likelion.edu.vn.health_care.model.mapper;
 
 import likelion.edu.vn.health_care.entity.UserEntity;
 import likelion.edu.vn.health_care.model.request.UserRequest;
+import likelion.edu.vn.health_care.model.request.UserUpdateRequest;
 import likelion.edu.vn.health_care.model.response.UserResponse;
 import org.mapstruct.Mapper;
 
@@ -16,6 +17,18 @@ public abstract class UserMapper {
         userEntity.setAddress(user.getAddress());
         userEntity.setPhone(user.getPhone());
         userEntity.setGender(user.getGender());
+        return userEntity;
+    }
+
+
+    public UserEntity fromUserUpdateRequestToUserEntity(UserUpdateRequest user){
+        UserEntity userEntity = new UserEntity();
+        userEntity.setDob(user.getDob());
+        userEntity.setFullName(user.getFullName());
+        userEntity.setAddress(user.getAddress());
+        userEntity.setPhone(user.getPhone());
+        userEntity.setGender(user.getGender());
+        userEntity.setPassword(user.getPassword());
         return userEntity;
     }
 

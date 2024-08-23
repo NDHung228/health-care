@@ -149,11 +149,8 @@ public class AppointmentServiceImpl implements AppointmentService {
     public List<AppointmentTimeResponse> getAppointmentTimeAvailable() {
         List<AppointmentTimeResponse> listAppointmentAvailable = new ArrayList<>();
         Optional<List<AppointmentTimeResponse>> listAppointmentTimeUnavailable = getAppointmentTimeUnavailable();
-
-        System.err.println("This here1");
-
+        
         if (listAppointmentTimeUnavailable.isPresent()) {
-            System.err.println("This here2 " + listAppointmentTimeUnavailable.get().size());
 
             listAppointmentAvailable = listAppointmentTimeUnavailable.get();
 
