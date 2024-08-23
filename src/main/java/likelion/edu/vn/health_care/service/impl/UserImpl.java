@@ -9,6 +9,7 @@ import likelion.edu.vn.health_care.model.mapper.UserMapper;
 import likelion.edu.vn.health_care.model.response.UserResponse;
 import likelion.edu.vn.health_care.repository.UserRepository;
 import likelion.edu.vn.health_care.service.UserService;
+import likelion.edu.vn.health_care.util.SpecificationUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -144,20 +145,38 @@ public class UserImpl implements UserService {
         Page<UserEntity> pageUser = this.userRepository.findAll(spec, pageable);
         Page<UserDTO> pageUserDTO = pageUser.map(UserDTO::convertToDTO);
 
-        ResultPaginationDTO rs = new ResultPaginationDTO();
-        Meta mt = new Meta();
+        return buildResultPaginationDTO(pageUser, pageUserDTO);
+    }
 
+    @Override
+    public ResultPaginationDTO handlegetAllUsers(String name, String email, Pageable pageable) {
+        Specification<UserEntity> spec = Specification.where(null);
+
+        if (name != null && !name.isEmpty()) {
+            spec = spec.and(SpecificationUtil.likeIgnoreCase("fullName", name));
+        }
+
+        if (email != null && !email.isEmpty()) {
+            spec = spec.and(SpecificationUtil.likeIgnoreCase("email", email));
+        }
+
+        Page<UserEntity> pageUser = this.userRepository.findAll(spec, pageable);
+        Page<UserDTO> pageUserDTO = pageUser.map(UserDTO::convertToDTO);
+
+        return buildResultPaginationDTO(pageUser, pageUserDTO);
+    }
+
+    private ResultPaginationDTO buildResultPaginationDTO(Page<UserEntity> pageUser, Page<UserDTO> pageUserDTO) {
+        Meta mt = new Meta();
         mt.setPage(pageUser.getNumber() + 1);
         mt.setPageSize(pageUser.getSize());
-
         mt.setPages(pageUser.getTotalPages());
         mt.setTotal(pageUser.getTotalElements());
 
+        ResultPaginationDTO rs = new ResultPaginationDTO();
         rs.setMeta(mt);
         rs.setResult(pageUserDTO.getContent());
 
         return rs;
     }
-
-
 }
