@@ -7,6 +7,8 @@ import likelion.edu.vn.health_care.service.FileUploadService;
 import likelion.edu.vn.health_care.service.UserService;
 import likelion.edu.vn.health_care.util.ResponseHandler;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.ui.Model;
@@ -14,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("api/user")
@@ -162,4 +165,18 @@ public class UserController {
         return ResponseHandler.generateResponse(HttpStatus.BAD_REQUEST, true, "Get fail", null);
     }
 
+    @GetMapping
+    public ResponseEntity<Object> getAllUsers(
+            @RequestParam("current") Optional<String> currentOptional,
+            @RequestParam("pageSize") Optional<String> pageSizeOptional) {
+        try {
+            int current = currentOptional.filter(s -> !s.isEmpty()).map(Integer::parseInt).orElse(1);
+            int pageSize = pageSizeOptional.filter(s -> !s.isEmpty()).map(Integer::parseInt).orElse(10);
+
+            Pageable pageable = PageRequest.of(current - 1, pageSize);
+            return ResponseHandler.generateResponse(HttpStatus.OK, false, "Users retrieved successfully", this.userService.handleGetAll(pageable));
+        } catch (Exception e) {
+            return ResponseHandler.generateResponse(HttpStatus.INTERNAL_SERVER_ERROR, true, e.getMessage(), null);
+        }
+    }
 }

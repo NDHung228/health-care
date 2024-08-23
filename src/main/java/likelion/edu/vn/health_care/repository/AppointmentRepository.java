@@ -16,7 +16,6 @@ import java.util.Optional;
 @Repository
 public interface AppointmentRepository extends JpaRepository<AppointmentEntity, Integer> {
 
-
     @Query(value = "SELECT u.id " +
             "FROM users u " +
             "WHERE u.id NOT IN ( " +
@@ -28,7 +27,6 @@ public interface AppointmentRepository extends JpaRepository<AppointmentEntity, 
             "AND u.role_id = 2 " +
             "LIMIT 1;", nativeQuery = true)
     Optional<Integer> findAvailableDoctorId(String appointmentDate, String appointmentTime);
-
 
     @Query(value = "SELECT DISTINCT " +
             "    a.appointment_date,  " +
@@ -42,7 +40,7 @@ public interface AppointmentRepository extends JpaRepository<AppointmentEntity, 
             "    u.role_id = 2 " +
             "    AND a.appointment_date IS NOT NULL " +
             "    AND a.appointment_time IS NOT NULL " +
-            "    AND a.appointment_date BETWEEN CURRENT_DATE AND CURRENT_DATE + INTERVAL '3 days' ",nativeQuery = true)
+            "    AND a.appointment_date BETWEEN CURRENT_DATE AND CURRENT_DATE + INTERVAL '3 days' ", nativeQuery = true)
     Optional<List<AppointmentTimeResponse>> listUnavailableAppointments();
 
 }

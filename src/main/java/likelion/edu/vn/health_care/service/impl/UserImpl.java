@@ -2,12 +2,15 @@ package likelion.edu.vn.health_care.service.impl;
 
 import likelion.edu.vn.health_care.entity.UserEntity;
 import likelion.edu.vn.health_care.exception.ResourceNotFoundException;
+import likelion.edu.vn.health_care.model.dto.Meta;
 import likelion.edu.vn.health_care.model.dto.ResultPaginationDTO;
+import likelion.edu.vn.health_care.model.dto.UserDTO;
 import likelion.edu.vn.health_care.model.mapper.UserMapper;
 import likelion.edu.vn.health_care.model.response.UserResponse;
 import likelion.edu.vn.health_care.repository.UserRepository;
 import likelion.edu.vn.health_care.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
@@ -53,7 +56,22 @@ public class UserImpl implements UserService {
 
     @Override
     public ResultPaginationDTO handleGetAll(Pageable pageable) {
-        return null;
+        Page<UserEntity> pageUser = this.userRepository.findAll(pageable);
+        Page<UserDTO> pageUserDTO = pageUser.map(UserDTO::convertToDTO);
+
+        ResultPaginationDTO rs = new ResultPaginationDTO();
+        Meta mt = new Meta();
+
+        mt.setPage(pageUser.getNumber() + 1);
+        mt.setPageSize(pageUser.getSize());
+
+        mt.setPages(pageUser.getTotalPages());
+        mt.setTotal(pageUser.getTotalElements());
+
+        rs.setMeta(mt);
+        rs.setResult(pageUserDTO.getContent());
+
+        return rs;
     }
 
     @Override
