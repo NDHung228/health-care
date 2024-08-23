@@ -5,6 +5,7 @@ import likelion.edu.vn.health_care.enumration.AppointmentStatus;
 import likelion.edu.vn.health_care.model.dto.Meta;
 import likelion.edu.vn.health_care.model.dto.ResultPaginationDTO;
 import likelion.edu.vn.health_care.model.request.AppointmentRequest;
+import likelion.edu.vn.health_care.model.response.AppointmentTimeResponse;
 import likelion.edu.vn.health_care.repository.AppointmentRepository;
 import likelion.edu.vn.health_care.security.UserInfoService;
 import likelion.edu.vn.health_care.service.AppointmentService;
@@ -14,6 +15,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -130,5 +133,30 @@ public class AppointmentServiceImpl implements AppointmentService {
             throw new RuntimeException("Error creating appointment: " + e.getMessage(), e);
         }
     }
+
+    @Override
+    public List<AppointmentTimeResponse> getAppointmentTimeAvailable() {
+        List<AppointmentTimeResponse> listAppointmentAvailable = new ArrayList<>();
+        Optional<List<AppointmentTimeResponse>> listAppointmentTimeUnavailable = getAppointmentTimeUnavailable();
+
+        System.err.println("This here1");
+
+        if (listAppointmentTimeUnavailable.isPresent()) {
+            System.err.println("This here2 " + listAppointmentTimeUnavailable.get().size());
+
+            listAppointmentAvailable = listAppointmentTimeUnavailable.get();
+
+            for (AppointmentTimeResponse appointmentTimeResponse : listAppointmentAvailable) {
+                System.err.println(appointmentTimeResponse);
+            }
+        }
+        return listAppointmentAvailable;
+    }
+
+
+    private Optional<List<AppointmentTimeResponse>> getAppointmentTimeUnavailable() {
+        return appointmentRepository.listUnavailableAppointments();
+    }
+
 
 }

@@ -114,9 +114,7 @@ public class UserInfoService implements UserDetailsService {
             if (checkCurrentUser != null && checkCurrentUser.getEmail().equals(userRequest.getEmail())) {
                 UserEntity userInfo = userMapper.toUserEntity(userRequest);
                 userInfo.setId(checkCurrentUser.getId());
-
-                System.err.println("updateUser: " + userInfo);
-
+                userInfo.setRoleId(checkCurrentUser.getRoleId());
                 userInfo = repository.save(userInfo);
                 return userMapper.toUserResponse(userInfo);
             }

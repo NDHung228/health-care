@@ -1,8 +1,8 @@
 package likelion.edu.vn.health_care.controller;
 
 import likelion.edu.vn.health_care.entity.AppointmentEntity;
-import likelion.edu.vn.health_care.entity.MedicalRecordEntity;
 import likelion.edu.vn.health_care.model.request.AppointmentRequest;
+import likelion.edu.vn.health_care.model.response.AppointmentTimeResponse;
 import likelion.edu.vn.health_care.service.AppointmentService;
 import likelion.edu.vn.health_care.util.ResponseHandler;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -80,6 +81,20 @@ public class AppointmentController {
         try {
             appointmentService.delete(id);
             return ResponseHandler.generateResponse(HttpStatus.OK, false, "Appointment deleted successfully", null);
+        } catch (Exception e) {
+            return ResponseHandler.generateResponse(HttpStatus.BAD_REQUEST, true, e.getMessage(), null);
+        }
+    }
+
+
+    @GetMapping("/appointment-available")
+    public ResponseEntity<Object> getAppointmentAvailable() {
+        try {
+
+            List<AppointmentTimeResponse> listAppointmentTime = appointmentService.getAppointmentTimeAvailable();
+            return ResponseHandler.generateResponse(HttpStatus.OK, false, "Appointment found", listAppointmentTime);
+
+
         } catch (Exception e) {
             return ResponseHandler.generateResponse(HttpStatus.BAD_REQUEST, true, e.getMessage(), null);
         }

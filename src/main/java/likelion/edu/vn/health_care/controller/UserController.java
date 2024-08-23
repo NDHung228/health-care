@@ -75,6 +75,7 @@ public class UserController {
 
     @PostMapping("/doctor/register")
     public ResponseEntity<Object> registerDoctor(@RequestBody UserRequest user) {
+        System.err.println("Demo");
         try {
             String response = userInfoService.addDoctor(user);
             return ResponseHandler.generateResponse(HttpStatus.CREATED, false, "Register success", response);
@@ -83,9 +84,8 @@ public class UserController {
         }
     }
 
-    @PostMapping("/update")
-    public ResponseEntity<Object> update(@RequestBody UserRequest user, @RequestParam("image") MultipartFile multipartFile
-    ) {
+    @PutMapping("/update")
+    public ResponseEntity<Object> update(@RequestBody UserRequest user) {
         try {
             UserResponse userResponse = userInfoService.updateUser(user);
 
