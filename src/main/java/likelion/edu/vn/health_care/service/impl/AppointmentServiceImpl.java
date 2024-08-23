@@ -4,6 +4,7 @@ import likelion.edu.vn.health_care.entity.AppointmentEntity;
 import likelion.edu.vn.health_care.entity.MedicalRecordEntity;
 import likelion.edu.vn.health_care.entity.UserEntity;
 import likelion.edu.vn.health_care.enumration.AppointmentStatus;
+import likelion.edu.vn.health_care.enumration.AppointmentTime;
 import likelion.edu.vn.health_care.model.dto.AppointmentDTO;
 import likelion.edu.vn.health_care.model.dto.AppointmentDetailDTO;
 import likelion.edu.vn.health_care.model.dto.Meta;
@@ -21,6 +22,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -147,17 +149,56 @@ public class AppointmentServiceImpl implements AppointmentService {
 
     @Override
     public List<AppointmentTimeResponse> getAppointmentTimeAvailable() {
-        List<AppointmentTimeResponse> listAppointmentAvailable = new ArrayList<>();
+        List<AppointmentTimeResponse> listAppointmentAvailable = generateNext3DaysAppointments();
         Optional<List<AppointmentTimeResponse>> listAppointmentTimeUnavailable = getAppointmentTimeUnavailable();
-        
+
         if (listAppointmentTimeUnavailable.isPresent()) {
+            List<AppointmentTimeResponse> unavailableList = listAppointmentTimeUnavailable.get();
+            // Create a new list to store the available appointments after removing the unavailable ones
+            List<AppointmentTimeResponse> result = new ArrayList<>(listAppointmentAvailable);
 
-            listAppointmentAvailable = listAppointmentTimeUnavailable.get();
+            // Manually remove unavailable appointments
+            for (AppointmentTimeResponse unavailable : unavailableList) {
+                result.removeIf(available ->
+                        available.getAppointmentTime().equals(unavailable.getAppointmentTime()) &&
+                                available.getAppointmentDate().equals(unavailable.getAppointmentDate())
+                );
+            }
 
-            for (AppointmentTimeResponse appointmentTimeResponse : listAppointmentAvailable) {
-                System.err.println(appointmentTimeResponse);
+            return result;
+        }
+
+        return listAppointmentAvailable;
+    }
+
+
+    private List<AppointmentTimeResponse> generateNext3DaysAppointments() {
+        List<AppointmentTimeResponse> listAppointmentAvailable = new ArrayList<>();
+
+        // Example appointment times for each day using the enum
+        AppointmentTime[] appointmentTimes = AppointmentTime.values();
+
+        // Generating the next 3 days
+        for (int i = 0; i < 3; i++) {
+            LocalDate date = LocalDate.now().plusDays(i + 1);
+
+            for (AppointmentTime time : appointmentTimes) {
+                AppointmentTimeResponse appointment = new AppointmentTimeResponse() {
+                    @Override
+                    public LocalDate getAppointmentDate() {
+                        return date;
+                    }
+
+                    @Override
+                    public AppointmentTime getAppointmentTime() {
+                        return time;
+                    }
+                };
+
+                listAppointmentAvailable.add(appointment);
             }
         }
+
         return listAppointmentAvailable;
     }
 
