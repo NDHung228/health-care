@@ -4,6 +4,7 @@ import likelion.edu.vn.health_care.entity.AppointmentEntity;
 import likelion.edu.vn.health_care.entity.MedicalRecordEntity;
 import likelion.edu.vn.health_care.model.dto.AppointmentDetailDTO;
 import likelion.edu.vn.health_care.model.request.AppointmentRequest;
+import likelion.edu.vn.health_care.model.response.AppointmentTimeResponse;
 import likelion.edu.vn.health_care.service.AppointmentService;
 import likelion.edu.vn.health_care.util.ResponseHandler;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -30,7 +32,8 @@ public class AppointmentController {
         try {
 
             AppointmentEntity createdAppointment = appointmentService.create(appointment);
-            return ResponseHandler.generateResponse(HttpStatus.CREATED, false, "Appointment created successfully", createdAppointment);
+            return ResponseHandler.generateResponse(HttpStatus.CREATED, false, "Appointment created successfully",
+                    createdAppointment);
         } catch (Exception e) {
             return ResponseHandler.generateResponse(HttpStatus.BAD_REQUEST, true, e.getMessage(), null);
         }
@@ -45,7 +48,8 @@ public class AppointmentController {
             int pageSize = pageSizeOptional.filter(s -> !s.isEmpty()).map(Integer::parseInt).orElse(10);
 
             Pageable pageable = PageRequest.of(current - 1, pageSize);
-            return ResponseHandler.generateResponse(HttpStatus.OK, false, "Records retrieved successfully", this.appointmentService.handleGetAll(pageable));
+            return ResponseHandler.generateResponse(HttpStatus.OK, false, "Records retrieved successfully",
+                    this.appointmentService.handleGetAll(pageable));
         } catch (Exception e) {
             return ResponseHandler.generateResponse(HttpStatus.INTERNAL_SERVER_ERROR, true, e.getMessage(), null);
         }
@@ -66,11 +70,13 @@ public class AppointmentController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Object> updateAppointment(@PathVariable Integer id, @RequestBody AppointmentEntity appointment) {
+    public ResponseEntity<Object> updateAppointment(@PathVariable Integer id,
+            @RequestBody AppointmentEntity appointment) {
         try {
             appointment.setId(id);
             AppointmentEntity updatedAppointment = appointmentService.update(appointment);
-            return ResponseHandler.generateResponse(HttpStatus.OK, false, "Appointment updated successfully", updatedAppointment);
+            return ResponseHandler.generateResponse(HttpStatus.OK, false, "Appointment updated successfully",
+                    updatedAppointment);
         } catch (Exception e) {
             return ResponseHandler.generateResponse(HttpStatus.BAD_REQUEST, true, e.getMessage(), null);
         }
@@ -81,6 +87,18 @@ public class AppointmentController {
         try {
             appointmentService.delete(id);
             return ResponseHandler.generateResponse(HttpStatus.OK, false, "Appointment deleted successfully", null);
+        } catch (Exception e) {
+            return ResponseHandler.generateResponse(HttpStatus.BAD_REQUEST, true, e.getMessage(), null);
+        }
+    }
+
+    @GetMapping("/appointment-available")
+    public ResponseEntity<Object> getAppointmentAvailable() {
+        try {
+
+            List<AppointmentTimeResponse> listAppointmentTime = appointmentService.getAppointmentTimeAvailable();
+            return ResponseHandler.generateResponse(HttpStatus.OK, false, "Appointment found", listAppointmentTime);
+
         } catch (Exception e) {
             return ResponseHandler.generateResponse(HttpStatus.BAD_REQUEST, true, e.getMessage(), null);
         }

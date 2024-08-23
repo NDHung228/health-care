@@ -4,6 +4,7 @@ package likelion.edu.vn.health_care.security;
 import likelion.edu.vn.health_care.entity.UserEntity;
 import likelion.edu.vn.health_care.model.mapper.UserMapper;
 import likelion.edu.vn.health_care.model.request.UserRequest;
+import likelion.edu.vn.health_care.model.request.UserUpdateRequest;
 import likelion.edu.vn.health_care.model.response.UserResponse;
 import likelion.edu.vn.health_care.repository.UserRepository;
 import likelion.edu.vn.health_care.security.jwt.JwtUtil;
@@ -107,16 +108,16 @@ public class UserInfoService implements UserDetailsService {
         return getUserEntity().getId();
     }
 
-    public UserResponse updateUser(UserRequest userRequest) throws Exception {
+    public UserResponse updateUser(UserUpdateRequest userRequest) throws Exception {
         try {
             UserResponse checkCurrentUser = getUserDetails();
 
-            if (checkCurrentUser != null && checkCurrentUser.getEmail().equals(userRequest.getEmail())) {
-                UserEntity userInfo = userMapper.toUserEntity(userRequest);
+            if (checkCurrentUser != null) {
+                UserEntity userInfo = userMapper.fromUserUpdateRequestToUserEntity(userRequest);
+                userInfo.setPassword(encoder.encode(userRequest.getPassword()));
+                userInfo.setEmail(checkCurrentUser.getEmail());
                 userInfo.setId(checkCurrentUser.getId());
-
-                System.err.println("updateUser: " + userInfo);
-
+                userInfo.setRoleId(checkCurrentUser.getRoleId());
                 userInfo = repository.save(userInfo);
                 return userMapper.toUserResponse(userInfo);
             }

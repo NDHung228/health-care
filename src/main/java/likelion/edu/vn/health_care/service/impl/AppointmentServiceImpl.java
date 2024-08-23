@@ -9,6 +9,7 @@ import likelion.edu.vn.health_care.model.dto.AppointmentDetailDTO;
 import likelion.edu.vn.health_care.model.dto.Meta;
 import likelion.edu.vn.health_care.model.dto.ResultPaginationDTO;
 import likelion.edu.vn.health_care.model.request.AppointmentRequest;
+import likelion.edu.vn.health_care.model.response.AppointmentTimeResponse;
 import likelion.edu.vn.health_care.repository.AppointmentRepository;
 import likelion.edu.vn.health_care.repository.MedicalRecordRepository;
 import likelion.edu.vn.health_care.repository.UserRepository;
@@ -20,6 +21,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -75,7 +78,6 @@ public class AppointmentServiceImpl implements AppointmentService {
         }
     }
 
-
     @Override
     public Iterable<AppointmentEntity> findAll() {
         try {
@@ -96,17 +98,17 @@ public class AppointmentServiceImpl implements AppointmentService {
 
     @Override
     public ResultPaginationDTO handleGetAll(Pageable pageable) {
-        Page<AppointmentEntity> pageAppointment  = this.appointmentRepository.findAll(pageable);
+        Page<AppointmentEntity> pageAppointment = this.appointmentRepository.findAll(pageable);
         Page<AppointmentDTO> pageAppointmentDTO = pageAppointment.map(this::convertToDTO);
 
         ResultPaginationDTO rs = new ResultPaginationDTO();
         Meta mt = new Meta();
 
-        mt.setPage(pageAppointment .getNumber() + 1);
-        mt.setPageSize(pageAppointment .getSize());
+        mt.setPage(pageAppointment.getNumber() + 1);
+        mt.setPageSize(pageAppointment.getSize());
 
-        mt.setPages(pageAppointment .getTotalPages());
-        mt.setTotal(pageAppointment .getTotalElements());
+        mt.setPages(pageAppointment.getTotalPages());
+        mt.setTotal(pageAppointment.getTotalElements());
 
         rs.setMeta(mt);
         rs.setResult(pageAppointmentDTO.getContent());
@@ -119,7 +121,6 @@ public class AppointmentServiceImpl implements AppointmentService {
             // Convert date and time to the appropriate format if necessary
             String appointmentDate = appointmentRequest.getAppointmentDate().toString();
             String appointmentTime = appointmentRequest.getAppointmentTime().toString();
-
 
             // Fetch the available doctor ID
             Integer availableDoctorId = appointmentRepository.findAvailableDoctorId(appointmentDate, appointmentTime)
@@ -145,6 +146,25 @@ public class AppointmentServiceImpl implements AppointmentService {
     }
 
     @Override
+    public List<AppointmentTimeResponse> getAppointmentTimeAvailable() {
+        List<AppointmentTimeResponse> listAppointmentAvailable = new ArrayList<>();
+        Optional<List<AppointmentTimeResponse>> listAppointmentTimeUnavailable = getAppointmentTimeUnavailable();
+        
+        if (listAppointmentTimeUnavailable.isPresent()) {
+
+            listAppointmentAvailable = listAppointmentTimeUnavailable.get();
+
+            for (AppointmentTimeResponse appointmentTimeResponse : listAppointmentAvailable) {
+                System.err.println(appointmentTimeResponse);
+            }
+        }
+        return listAppointmentAvailable;
+    }
+
+    private Optional<List<AppointmentTimeResponse>> getAppointmentTimeUnavailable() {
+        return appointmentRepository.listUnavailableAppointments();
+    }
+
     public Optional<AppointmentDetailDTO> findAppointmentDetailById(Integer id) {
         Optional<AppointmentEntity> appointmentOpt = appointmentRepository.findById(id);
         if (appointmentOpt.isPresent()) {
@@ -160,7 +180,8 @@ public class AppointmentServiceImpl implements AppointmentService {
             String treatment = "";
 
             if (appointment.getMedicalRecordId() != null) {
-                Optional<MedicalRecordEntity> medicalRecordOpt = medicalRecordRepository.findById(appointment.getMedicalRecordId());
+                Optional<MedicalRecordEntity> medicalRecordOpt = medicalRecordRepository
+                        .findById(appointment.getMedicalRecordId());
                 if (medicalRecordOpt.isPresent()) {
                     diagnosis = medicalRecordOpt.get().getDiagnosis();
                     treatment = medicalRecordOpt.get().getTreatment();
@@ -175,8 +196,7 @@ public class AppointmentServiceImpl implements AppointmentService {
                     appointment.getAppointmentTime().name(),
                     appointment.getAppointmentStatus().name(),
                     diagnosis,
-                    treatment
-            );
+                    treatment);
 
             return Optional.of(dto);
         } else {
@@ -200,7 +220,6 @@ public class AppointmentServiceImpl implements AppointmentService {
                 appointmentEntity.getMedicalRecordId(),
                 appointmentEntity.getAppointmentDate(),
                 appointmentEntity.getAppointmentTime().name(),
-                appointmentEntity.getAppointmentStatus().name()
-        );
+                appointmentEntity.getAppointmentStatus().name());
     }
 }
