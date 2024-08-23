@@ -4,7 +4,10 @@ import likelion.edu.vn.health_care.entity.UserEntity;
 import likelion.edu.vn.health_care.model.request.UserRequest;
 import likelion.edu.vn.health_care.model.request.UserUpdateRequest;
 import likelion.edu.vn.health_care.model.response.UserResponse;
+import likelion.edu.vn.health_care.util.DateUtil;
 import org.mapstruct.Mapper;
+
+import java.time.LocalDate;
 
 @Mapper(componentModel = "spring")
 public abstract class UserMapper {
@@ -34,7 +37,7 @@ public abstract class UserMapper {
 
     public UserResponse toUserResponse(UserEntity user) {
         UserResponse userResponse = new UserResponse();
-        userResponse.setDob(user.getDob());
+        userResponse.setDob(DateUtil.parseDateToLocalDate(user.getDob()));
         userResponse.setEmail(user.getEmail());
         userResponse.setFullName(user.getFullName());
         userResponse.setAddress(user.getAddress());
@@ -48,7 +51,7 @@ public abstract class UserMapper {
 
     public UserEntity fromUserResponse(UserResponse user) {
         UserEntity userEntity = new UserEntity();
-        userEntity.setDob(user.getDob());
+        userEntity.setDob(DateUtil.parseLocalDateToDate(user.getDob()) );
         userEntity.setEmail(user.getEmail());
         userEntity.setFullName(user.getFullName());
         userEntity.setAddress(user.getAddress());

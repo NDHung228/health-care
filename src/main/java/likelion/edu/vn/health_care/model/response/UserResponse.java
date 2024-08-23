@@ -2,6 +2,7 @@ package likelion.edu.vn.health_care.model.response;
 
 import lombok.*;
 
+import java.time.LocalDate;
 import java.util.Date;
 @Getter
 @Setter
@@ -15,7 +16,7 @@ public class UserResponse {
     private String phone;
     private String address;
     private String gender;
-    private Date dob;
+    private LocalDate dob;
     private String avatarUrl;
     private int roleId;
 
