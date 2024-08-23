@@ -2,6 +2,7 @@ package likelion.edu.vn.health_care.controller;
 
 import likelion.edu.vn.health_care.entity.AppointmentEntity;
 import likelion.edu.vn.health_care.entity.MedicalRecordEntity;
+import likelion.edu.vn.health_care.model.dto.AppointmentDetailDTO;
 import likelion.edu.vn.health_care.model.request.AppointmentRequest;
 import likelion.edu.vn.health_care.service.AppointmentService;
 import likelion.edu.vn.health_care.util.ResponseHandler;
@@ -53,7 +54,7 @@ public class AppointmentController {
     @GetMapping("/{id}")
     public ResponseEntity<Object> getAppointmentById(@PathVariable Integer id) {
         try {
-            Optional<AppointmentEntity> appointment = appointmentService.findById(id);
+            Optional<AppointmentDetailDTO> appointment = appointmentService.findAppointmentDetailById(id);
             if (appointment.isPresent()) {
                 return ResponseHandler.generateResponse(HttpStatus.OK, false, "Appointment found", appointment.get());
             } else {
