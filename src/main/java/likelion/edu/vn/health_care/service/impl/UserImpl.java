@@ -4,6 +4,7 @@ import likelion.edu.vn.health_care.entity.UserEntity;
 import likelion.edu.vn.health_care.exception.ResourceNotFoundException;
 import likelion.edu.vn.health_care.model.dto.Meta;
 import likelion.edu.vn.health_care.model.dto.ResultPaginationDTO;
+import likelion.edu.vn.health_care.model.dto.UserDTO;
 import likelion.edu.vn.health_care.model.mapper.UserMapper;
 import likelion.edu.vn.health_care.model.response.UserResponse;
 import likelion.edu.vn.health_care.repository.UserRepository;
@@ -56,6 +57,8 @@ public class UserImpl implements UserService {
     @Override
     public ResultPaginationDTO handleGetAll(Pageable pageable) {
         Page<UserEntity> pageUser = this.userRepository.findAll(pageable);
+        Page<UserDTO> pageUserDTO = pageUser.map(UserDTO::convertToDTO);
+
         ResultPaginationDTO rs = new ResultPaginationDTO();
         Meta mt = new Meta();
 
@@ -66,7 +69,7 @@ public class UserImpl implements UserService {
         mt.setTotal(pageUser.getTotalElements());
 
         rs.setMeta(mt);
-        rs.setResult(pageUser.getContent());
+        rs.setResult(pageUserDTO.getContent());
 
         return rs;
     }
