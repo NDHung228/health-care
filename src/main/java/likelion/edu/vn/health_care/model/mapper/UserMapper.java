@@ -20,6 +20,7 @@ public abstract class UserMapper {
         userEntity.setAddress(user.getAddress());
         userEntity.setPhone(user.getPhone());
         userEntity.setGender(user.getGender());
+
         return userEntity;
     }
 
@@ -32,6 +33,7 @@ public abstract class UserMapper {
         userEntity.setPhone(user.getPhone());
         userEntity.setGender(user.getGender());
         userEntity.setPassword(user.getPassword());
+
         return userEntity;
     }
 
@@ -45,7 +47,7 @@ public abstract class UserMapper {
         userResponse.setId(user.getId());
         userResponse.setGender(user.getGender());
         userResponse.setRoleId(user.getRoleId());
-
+        userResponse.setAvatarUrl(user.getAvatarUrl());
         return userResponse;
     }
 
