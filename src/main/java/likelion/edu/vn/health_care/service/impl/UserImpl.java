@@ -12,6 +12,7 @@ import likelion.edu.vn.health_care.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -136,6 +137,26 @@ public class UserImpl implements UserService {
     public UserResponse getUserById(int id) {
         return userMapper.toUserResponse(userRepository.findById(id).orElseThrow(()
                 -> new ResourceNotFoundException("Not found", "id", id)));
+    }
+
+    @Override
+    public ResultPaginationDTO handlegetAllUsers(Specification<UserEntity> spec, Pageable pageable) {
+        Page<UserEntity> pageUser = this.userRepository.findAll(spec, pageable);
+        Page<UserDTO> pageUserDTO = pageUser.map(UserDTO::convertToDTO);
+
+        ResultPaginationDTO rs = new ResultPaginationDTO();
+        Meta mt = new Meta();
+
+        mt.setPage(pageUser.getNumber() + 1);
+        mt.setPageSize(pageUser.getSize());
+
+        mt.setPages(pageUser.getTotalPages());
+        mt.setTotal(pageUser.getTotalElements());
+
+        rs.setMeta(mt);
+        rs.setResult(pageUserDTO.getContent());
+
+        return rs;
     }
 
 
