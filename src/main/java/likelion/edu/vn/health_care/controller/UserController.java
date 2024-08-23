@@ -2,6 +2,7 @@ package likelion.edu.vn.health_care.controller;
 
 import com.turkraft.springfilter.boot.Filter;
 import likelion.edu.vn.health_care.entity.UserEntity;
+import likelion.edu.vn.health_care.model.dto.ResultPaginationDTO;
 import likelion.edu.vn.health_care.model.request.UserRequest;
 import likelion.edu.vn.health_care.model.request.UserUpdateRequest;
 import likelion.edu.vn.health_care.model.response.UserResponse;
@@ -169,17 +170,15 @@ public class UserController {
 
     @GetMapping
     public ResponseEntity<Object> getAllUsers(
-            @Filter Specification<UserEntity> spec, Pageable pageable) {
-        return ResponseEntity.ok(this.userService.handlegetAllUsers(spec, pageable));
+            @RequestParam(required = false) String name,
+            @RequestParam(required = false) String email,
+            Pageable pageable) {
+        try {
+            ResultPaginationDTO result = this.userService.handlegetAllUsers(name, email, pageable);
 
-//        try {
-//            int current = currentOptional.filter(s -> !s.isEmpty()).map(Integer::parseInt).orElse(1);
-//            int pageSize = pageSizeOptional.filter(s -> !s.isEmpty()).map(Integer::parseInt).orElse(10);
-//
-//            Pageable pageable = PageRequest.of(current - 1, pageSize);
-//            return ResponseHandler.generateResponse(HttpStatus.OK, false, "Users retrieved successfully", this.userService.handleGetAll(pageable));
-//        } catch (Exception e) {
-//            return ResponseHandler.generateResponse(HttpStatus.INTERNAL_SERVER_ERROR, true, e.getMessage(), null);
-//        }
+            return ResponseHandler.generateResponse(HttpStatus.OK, false, "Users retrieved successfully", result);
+        } catch (Exception e) {
+            return ResponseHandler.generateResponse(HttpStatus.INTERNAL_SERVER_ERROR, true, e.getMessage(), null);
+        }
     }
 }
