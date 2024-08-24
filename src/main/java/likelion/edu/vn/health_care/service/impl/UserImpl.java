@@ -103,7 +103,7 @@ public class UserImpl implements UserService {
 
     @Override
     public List<UserResponse> getAllPatient() {
-        Optional<List<UserEntity>> listUser = userRepository.findAllByRoleId(1);
+        Optional<List<UserEntity>> listUser = userRepository.findAllByRoleId(3);
 
         List<UserResponse> userResponseList = new ArrayList<>();
         if (listUser.isPresent()) {
