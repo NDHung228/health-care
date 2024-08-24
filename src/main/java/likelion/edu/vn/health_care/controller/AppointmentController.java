@@ -2,7 +2,9 @@ package likelion.edu.vn.health_care.controller;
 
 import likelion.edu.vn.health_care.entity.AppointmentEntity;
 import likelion.edu.vn.health_care.entity.MedicalRecordEntity;
+import likelion.edu.vn.health_care.enumration.AppointmentTime;
 import likelion.edu.vn.health_care.model.dto.AppointmentDetailDTO;
+import likelion.edu.vn.health_care.model.dto.ResultPaginationDTO;
 import likelion.edu.vn.health_care.model.request.AppointmentRequest;
 import likelion.edu.vn.health_care.model.response.AppointmentTimeResponse;
 import likelion.edu.vn.health_care.service.AppointmentService;
@@ -14,6 +16,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -41,15 +44,13 @@ public class AppointmentController {
 
     @GetMapping
     public ResponseEntity<Object> getAllAppointments(
-            @RequestParam("current") Optional<String> currentOptional,
-            @RequestParam("pageSize") Optional<String> pageSizeOptional) {
+            @RequestParam(required = false) String patientName,
+            @RequestParam(required = false) LocalDate date,
+            @RequestParam(required = false) AppointmentTime time,
+            Pageable pageable) {
         try {
-            int current = currentOptional.filter(s -> !s.isEmpty()).map(Integer::parseInt).orElse(1);
-            int pageSize = pageSizeOptional.filter(s -> !s.isEmpty()).map(Integer::parseInt).orElse(10);
-
-            Pageable pageable = PageRequest.of(current - 1, pageSize);
-            return ResponseHandler.generateResponse(HttpStatus.OK, false, "Records retrieved successfully",
-                    this.appointmentService.handleGetAll(pageable));
+            ResultPaginationDTO result = this.appointmentService.handleGetAllAppointments(patientName, date, time, pageable);
+            return ResponseHandler.generateResponse(HttpStatus.OK, false, "Records retrieved successfully", result);
         } catch (Exception e) {
             return ResponseHandler.generateResponse(HttpStatus.INTERNAL_SERVER_ERROR, true, e.getMessage(), null);
         }
