@@ -129,10 +129,10 @@ public class UserInfoService implements UserDetailsService {
                 userInfo.setEmail(checkCurrentUser.getEmail());
                 userInfo.setId(checkCurrentUser.getId());
                 userInfo.setRoleId(checkCurrentUser.getRoleId());
+                userInfo.setAvatarUrl(checkCurrentUser.getAvatarUrl());
                 userInfo = repository.save(userInfo);
                 return userMapper.toUserResponse(userInfo);
             }
-
             return null;
 
         } catch (Exception e) {
