@@ -11,6 +11,7 @@ import likelion.edu.vn.health_care.security.jwt.JwtUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -46,17 +47,23 @@ public class UserInfoService implements UserDetailsService {
                 .orElseThrow(() -> new UsernameNotFoundException("User not found "));
     }
 
-    public String addUser(UserRequest userRequest) throws Exception {
+    public String addUser(UserRequest userRequest) {
         UserEntity userInfo = userMapper.toUserEntity(userRequest);
         userInfo.setPassword(encoder.encode(userRequest.getPassword()));
         userInfo.setRoleId(3);
+
         try {
             repository.save(userInfo);
             return "register patient success";
+        } catch (DataIntegrityViolationException e) {
+            // This exception is thrown when there's a constraint violation, like a duplicate email
+            throw new RuntimeException("Email already in use: " + userRequest.getEmail());
         } catch (Exception e) {
-            throw new Exception(e.getMessage());
+            // Catch other unexpected exceptions and rethrow them or handle them accordingly
+            throw new RuntimeException("An unexpected error occurred: " + e.getMessage());
         }
     }
+
 
     public String addDoctor(UserRequest userRequest) throws Exception {
         UserEntity userInfo = userMapper.toUserEntity(userRequest);
@@ -65,7 +72,11 @@ public class UserInfoService implements UserDetailsService {
         try {
             repository.save(userInfo);
             return "register doctor success";
-        } catch (Exception e) {
+        } catch (DataIntegrityViolationException e) {
+            // This exception is thrown when there's a constraint violation, like a duplicate email
+            throw new RuntimeException("Email already in use: " + userRequest.getEmail());
+        }
+        catch (Exception e) {
             throw new Exception(e.getMessage());
         }
     }
