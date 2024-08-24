@@ -149,7 +149,7 @@ public class UserImpl implements UserService {
     }
 
     @Override
-    public ResultPaginationDTO handlegetAllUsers(String name, String email, Pageable pageable) {
+    public ResultPaginationDTO handleGetAllUsers(String name, String email, Integer roleId, Pageable pageable) {
         Specification<UserEntity> spec = Specification.where(null);
 
         if (name != null && !name.isEmpty()) {
@@ -158,6 +158,10 @@ public class UserImpl implements UserService {
 
         if (email != null && !email.isEmpty()) {
             spec = spec.and(SpecificationUtil.likeIgnoreCase("email", email));
+        }
+
+        if (roleId != null) {
+            spec = spec.and(SpecificationUtil.equal("roleId", roleId));
         }
 
         Page<UserEntity> pageUser = this.userRepository.findAll(spec, pageable);

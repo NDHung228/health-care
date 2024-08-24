@@ -173,9 +173,10 @@ public class UserController {
     public ResponseEntity<Object> getAllUsers(
             @RequestParam(required = false) String name,
             @RequestParam(required = false) String email,
+            @RequestParam(required = false) Integer roleId,
             Pageable pageable) {
         try {
-            ResultPaginationDTO result = this.userService.handlegetAllUsers(name, email, pageable);
+            ResultPaginationDTO result = this.userService.handleGetAllUsers(name, email, roleId, pageable);
 
             return ResponseHandler.generateResponse(HttpStatus.OK, false, "Users retrieved successfully", result);
         } catch (Exception e) {
