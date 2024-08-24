@@ -16,16 +16,21 @@ import likelion.edu.vn.health_care.repository.MedicalRecordRepository;
 import likelion.edu.vn.health_care.repository.UserRepository;
 import likelion.edu.vn.health_care.security.UserInfoService;
 import likelion.edu.vn.health_care.service.AppointmentService;
+import likelion.edu.vn.health_care.util.SpecificationUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class AppointmentServiceImpl implements AppointmentService {
@@ -171,7 +176,6 @@ public class AppointmentServiceImpl implements AppointmentService {
         return listAppointmentAvailable;
     }
 
-
     private List<AppointmentTimeResponse> generateNext3DaysAppointments() {
         List<AppointmentTimeResponse> listAppointmentAvailable = new ArrayList<>();
 
@@ -246,14 +250,17 @@ public class AppointmentServiceImpl implements AppointmentService {
     }
 
     private AppointmentDTO convertToDTO(AppointmentEntity appointmentEntity) {
+        // get patient name by id
         String patientName = userRepository.findById(appointmentEntity.getPatientId())
                 .map(UserEntity::getFullName)
                 .orElse("");
 
+        // get doctor name by id
         String doctorName = userRepository.findById(appointmentEntity.getDoctorId())
                 .map(UserEntity::getFullName)
                 .orElse("");
 
+        // convert AppointmentEntity to AppointmentDTO
         return new AppointmentDTO(
                 appointmentEntity.getId(),
                 patientName,
@@ -261,6 +268,60 @@ public class AppointmentServiceImpl implements AppointmentService {
                 appointmentEntity.getMedicalRecordId(),
                 appointmentEntity.getAppointmentDate(),
                 appointmentEntity.getAppointmentTime().name(),
-                appointmentEntity.getAppointmentStatus().name());
+                appointmentEntity.getAppointmentStatus().name()
+        );
+    }
+
+    @Override
+    public ResultPaginationDTO handleGetAllAppointments(String patientName, LocalDate date, AppointmentTime time, Pageable pageable) {
+        Specification<AppointmentEntity> spec = Specification.where(null);
+
+        // Filter by name
+        if (patientName != null && !patientName.isEmpty()) {
+            Specification<UserEntity> userSpec = SpecificationUtil.likeIgnoreCase("fullName", patientName);
+            List<Integer> patientIds = userRepository.findAll(userSpec).stream()
+                    .map(UserEntity::getId)
+                    .collect(Collectors.toList());
+
+            if (!patientIds.isEmpty()) {
+                spec = spec.and(SpecificationUtil.in("patientId", patientIds));
+            } else {
+                // Trả về trang rỗng nếu không có kết quả
+                return buildResultPaginationDTO(new PageImpl<>(Collections.emptyList(), pageable, 0));
+            }
+        }
+
+        // Filter by date
+        if (date != null) {
+            spec = spec.and(SpecificationUtil.equal("appointmentDate", date));
+        }
+
+        // Filter by time
+        if (time != null) {
+            spec = spec.and(SpecificationUtil.equal("appointmentTime", time));
+        }
+
+        Page<AppointmentEntity> pageAppointment = this.appointmentRepository.findAll(spec, pageable);
+        Page<AppointmentDTO> pageAppointmentDTO = pageAppointment.map(this::convertToDTO);
+
+        return buildResultPaginationDTO(pageAppointment, pageAppointmentDTO);
+    }
+
+    private ResultPaginationDTO buildResultPaginationDTO(Page<AppointmentEntity> pageAppointment, Page<AppointmentDTO> pageAppointmentDTO) {
+        Meta mt = new Meta();
+        mt.setPage(pageAppointment.getNumber() + 1);
+        mt.setPageSize(pageAppointment.getSize());
+        mt.setPages(pageAppointment.getTotalPages());
+        mt.setTotal(pageAppointment.getTotalElements());
+
+        ResultPaginationDTO rs = new ResultPaginationDTO();
+        rs.setMeta(mt);
+        rs.setResult(pageAppointmentDTO.getContent());
+
+        return rs;
+    }
+
+    private ResultPaginationDTO buildResultPaginationDTO(Page<AppointmentEntity> pageAppointment) {
+        return buildResultPaginationDTO(pageAppointment, pageAppointment.map(this::convertToDTO));
     }
 }
