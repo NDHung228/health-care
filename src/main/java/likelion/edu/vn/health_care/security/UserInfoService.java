@@ -75,8 +75,7 @@ public class UserInfoService implements UserDetailsService {
         } catch (DataIntegrityViolationException e) {
             // This exception is thrown when there's a constraint violation, like a duplicate email
             throw new RuntimeException("Email already in use: " + userRequest.getEmail());
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             throw new Exception(e.getMessage());
         }
     }
@@ -121,11 +120,18 @@ public class UserInfoService implements UserDetailsService {
 
     public UserResponse updateUser(UserUpdateRequest userRequest) throws Exception {
         try {
-            UserResponse checkCurrentUser = getUserDetails();
+            UserEntity checkCurrentUser = getUserEntity();
+
 
             if (checkCurrentUser != null) {
+
                 UserEntity userInfo = userMapper.fromUserUpdateRequestToUserEntity(userRequest);
-                userInfo.setPassword(encoder.encode(userRequest.getPassword()));
+                if (userRequest.getPassword() == null || userRequest.getPassword().isEmpty()) {
+                    userInfo.setPassword(checkCurrentUser.getPassword());
+
+                } else {
+                    userInfo.setPassword(encoder.encode(userRequest.getPassword()));
+                }
                 userInfo.setEmail(checkCurrentUser.getEmail());
                 userInfo.setId(checkCurrentUser.getId());
                 userInfo.setRoleId(checkCurrentUser.getRoleId());
@@ -150,7 +156,7 @@ public class UserInfoService implements UserDetailsService {
         }
     }
 
-   public UserEntity saveUser(UserEntity userEntity) throws Exception {
+    public UserEntity saveUser(UserEntity userEntity) throws Exception {
         return repository.save(userEntity);
-   }
+    }
 }

@@ -32,7 +32,6 @@ public abstract class UserMapper {
         userEntity.setAddress(user.getAddress());
         userEntity.setPhone(user.getPhone());
         userEntity.setGender(user.getGender());
-        userEntity.setPassword(user.getPassword());
 
         return userEntity;
     }

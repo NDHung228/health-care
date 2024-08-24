@@ -92,6 +92,7 @@ public class UserController {
 
     @PutMapping("/update")
     public ResponseEntity<Object> update(@RequestBody UserUpdateRequest user) {
+        System.err.println(user.getPassword());
         try {
             UserResponse userResponse = userInfoService.updateUser(user);
 
