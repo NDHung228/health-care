@@ -160,7 +160,6 @@ public class UserController {
 
     @GetMapping("/find-user")
     public ResponseEntity<Object> getUserById(@RequestParam int id) {
-        System.err.println("This here");
         UserResponse userResponse = userService.getUserById(id);
 
         if (userResponse != null) {
