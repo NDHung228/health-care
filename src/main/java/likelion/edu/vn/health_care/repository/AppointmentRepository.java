@@ -4,6 +4,8 @@ import likelion.edu.vn.health_care.entity.AppointmentEntity;
 import likelion.edu.vn.health_care.entity.UserEntity;
 import likelion.edu.vn.health_care.enumration.AppointmentTime;
 import likelion.edu.vn.health_care.model.response.AppointmentTimeResponse;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
@@ -43,5 +45,8 @@ public interface AppointmentRepository extends JpaRepository<AppointmentEntity, 
             "    AND a.appointment_time IS NOT NULL " +
             "    AND a.appointment_date BETWEEN CURRENT_DATE AND CURRENT_DATE + INTERVAL '3 days' ", nativeQuery = true)
     Optional<List<AppointmentTimeResponse>> listUnavailableAppointments();
+
+    Page<AppointmentEntity> findByPatientId(Integer patientId, Pageable pageable);
+
 
 }

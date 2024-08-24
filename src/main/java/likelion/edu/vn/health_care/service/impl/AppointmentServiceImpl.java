@@ -176,6 +176,54 @@ public class AppointmentServiceImpl implements AppointmentService {
         return listAppointmentAvailable;
     }
 
+
+    @Override
+    public List<AppointmentDetailDTO> getAppointmentByPatientId(Pageable pageable) {
+        int userId = userInfoService.getUserId();
+        List<AppointmentDetailDTO> appointmentDetailDTOS = new ArrayList<>();
+
+        // Fetch the appointments with pagination
+        Page<AppointmentEntity> appointmentsPage = appointmentRepository.findByPatientId(userId, pageable);
+
+        // Iterate through the appointments and convert them to DTOs
+        appointmentsPage.getContent().forEach(appointmentEntity -> {
+            String patientName = userRepository.findById(appointmentEntity.getPatientId())
+                    .map(UserEntity::getFullName)
+                    .orElse("");
+            String doctorName = userRepository.findById(appointmentEntity.getDoctorId())
+                    .map(UserEntity::getFullName)
+                    .orElse("");
+
+            String diagnosis = "";
+            String treatment = "";
+
+            if (appointmentEntity.getMedicalRecordId() != null) {
+                Optional<MedicalRecordEntity> medicalRecordOpt = medicalRecordRepository
+                        .findById(appointmentEntity.getMedicalRecordId());
+                if (medicalRecordOpt.isPresent()) {
+                    diagnosis = medicalRecordOpt.get().getDiagnosis();
+                    treatment = medicalRecordOpt.get().getTreatment();
+                }
+            }
+
+            // Create the DTO and add it to the list
+            AppointmentDetailDTO dto = new AppointmentDetailDTO(
+                    appointmentEntity.getId(),
+                    patientName,
+                    doctorName,
+                    appointmentEntity.getAppointmentDate(),
+                    appointmentEntity.getAppointmentTime().name(),
+                    appointmentEntity.getAppointmentStatus().name(),
+                    diagnosis,
+                    treatment);
+            appointmentDetailDTOS.add(dto);
+        });
+
+        return appointmentDetailDTOS;
+    }
+
+
+
     private List<AppointmentTimeResponse> generateNext3DaysAppointments() {
         List<AppointmentTimeResponse> listAppointmentAvailable = new ArrayList<>();
 

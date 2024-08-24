@@ -20,4 +20,7 @@ public interface AppointmentService extends BaseService<AppointmentEntity> {
     List<AppointmentTimeResponse> getAppointmentTimeAvailable();
 
     ResultPaginationDTO handleGetAllAppointments(String patientName, LocalDate date, AppointmentTime time, Pageable pageable);
+
+    List<AppointmentDetailDTO> getAppointmentByPatientId(Pageable pageable);
+
 }
