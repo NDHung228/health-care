@@ -23,4 +23,5 @@ public interface AppointmentService extends BaseService<AppointmentEntity> {
 
     ResultPaginationDTO getAppointmentByPatientId(Pageable pageable);
 
+    AppointmentEntity updateAppointment(AppointmentDetailDTO appointmentDetailDTO);
 }
