@@ -178,7 +178,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 
 
     @Override
-    public List<AppointmentDetailDTO> getAppointmentByPatientId(Pageable pageable) {
+    public ResultPaginationDTO getAppointmentByPatientId(Pageable pageable) {
         int userId = userInfoService.getUserId();
         List<AppointmentDetailDTO> appointmentDetailDTOS = new ArrayList<>();
 
@@ -219,7 +219,18 @@ public class AppointmentServiceImpl implements AppointmentService {
             appointmentDetailDTOS.add(dto);
         });
 
-        return appointmentDetailDTOS;
+        Meta meta = new Meta();
+        meta.setPage(appointmentsPage.getNumber() + 1);
+        meta.setPageSize(appointmentsPage.getSize());
+        meta.setPages(appointmentsPage.getTotalPages());
+        meta.setTotal(appointmentsPage.getTotalElements());
+
+        // Create the ResultPaginationDTO and set the meta and result
+        ResultPaginationDTO resultPaginationDTO = new ResultPaginationDTO();
+        resultPaginationDTO.setMeta(meta);
+        resultPaginationDTO.setResult(appointmentDetailDTOS);
+
+        return resultPaginationDTO;
     }
 
 

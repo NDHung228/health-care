@@ -59,8 +59,8 @@ public class AppointmentController {
     @GetMapping("/patient")
     public ResponseEntity<Object> getAppointmentOfPatient(Pageable pageable) {
         try {
-            List<AppointmentDetailDTO> appointmentDetailDTOS = appointmentService.getAppointmentByPatientId( pageable);
-            return ResponseHandler.generateResponse(HttpStatus.OK, false, "Appointment found", appointmentDetailDTOS);
+            ResultPaginationDTO resultPaginationDTO = appointmentService.getAppointmentByPatientId( pageable);
+            return ResponseHandler.generateResponse(HttpStatus.OK, false, "Appointment found", resultPaginationDTO);
 
         } catch (Exception e) {
             return ResponseHandler.generateResponse(HttpStatus.NOT_FOUND, true, "Appointment not found", null);
