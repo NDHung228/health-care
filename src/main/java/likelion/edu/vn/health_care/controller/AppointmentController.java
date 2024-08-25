@@ -84,10 +84,10 @@ public class AppointmentController {
 
     @PutMapping("/{id}")
     public ResponseEntity<Object> updateAppointment(@PathVariable Integer id,
-            @RequestBody AppointmentEntity appointment) {
+                                                    @RequestBody AppointmentDetailDTO appointmentDetailDTO) {
         try {
-            appointment.setId(id);
-            AppointmentEntity updatedAppointment = appointmentService.update(appointment);
+            appointmentDetailDTO.setId(id);
+            AppointmentEntity updatedAppointment = appointmentService.updateAppointment(appointmentDetailDTO);
             return ResponseHandler.generateResponse(HttpStatus.OK, false, "Appointment updated successfully",
                     updatedAppointment);
         } catch (Exception e) {

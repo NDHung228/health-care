@@ -233,6 +233,53 @@ public class AppointmentServiceImpl implements AppointmentService {
         return resultPaginationDTO;
     }
 
+    @Override
+    public AppointmentEntity updateAppointment(AppointmentDetailDTO appointmentDetailDTO) {
+        try {
+            // Find existing appointment
+            Optional<AppointmentEntity> existingAppointmentOpt = appointmentRepository.findById(appointmentDetailDTO.getId());
+            if (existingAppointmentOpt.isPresent()) {
+                AppointmentEntity existingAppointment = existingAppointmentOpt.get();
+
+                // Update appointment details
+                existingAppointment.setAppointmentDate(appointmentDetailDTO.getAppointmentDate());
+                existingAppointment.setAppointmentTime(AppointmentTime.valueOf(appointmentDetailDTO.getAppointmentTime()));
+                existingAppointment.setAppointmentStatus(AppointmentStatus.valueOf(appointmentDetailDTO.getAppointmentStatus()));
+
+                // Update or create medical record
+                MedicalRecordEntity medicalRecord;
+
+                if (existingAppointment.getMedicalRecordId() != null) {
+                    // Update existing medical record
+                    Optional<MedicalRecordEntity> medicalRecordOpt = medicalRecordRepository.findById(existingAppointment.getMedicalRecordId());
+                    if (medicalRecordOpt.isPresent()) {
+                        medicalRecord = medicalRecordOpt.get();
+                    } else {
+                        throw new RuntimeException("Medical record not found with id: " + existingAppointment.getMedicalRecordId());
+                    }
+                } else {
+                    // Create new medical record
+                    medicalRecord = new MedicalRecordEntity();
+                    medicalRecord = medicalRecordRepository.save(medicalRecord);
+                    existingAppointment.setMedicalRecordId(medicalRecord.getId());
+                }
+
+                // Update medical record details
+                medicalRecord.setDiagnosis(appointmentDetailDTO.getDiagnosis());
+                medicalRecord.setTreatment(appointmentDetailDTO.getTreatment());
+
+                // Save updated medical record
+                medicalRecordRepository.save(medicalRecord);
+
+                // Save updated appointment
+                return appointmentRepository.save(existingAppointment);
+            } else {
+                throw new RuntimeException("Appointment not found with id: " + appointmentDetailDTO.getId());
+            }
+        } catch (Exception e) {
+            throw new RuntimeException("Error updating appointment: " + e.getMessage(), e);
+        }
+    }
 
 
     private List<AppointmentTimeResponse> generateNext3DaysAppointments() {
