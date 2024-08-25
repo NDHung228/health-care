@@ -5,6 +5,7 @@ import likelion.edu.vn.health_care.entity.MedicalRecordEntity;
 import likelion.edu.vn.health_care.entity.UserEntity;
 import likelion.edu.vn.health_care.enumration.AppointmentStatus;
 import likelion.edu.vn.health_care.enumration.AppointmentTime;
+import likelion.edu.vn.health_care.exception.ResourceNotFoundException;
 import likelion.edu.vn.health_care.model.dto.AppointmentDTO;
 import likelion.edu.vn.health_care.model.dto.AppointmentDetailDTO;
 import likelion.edu.vn.health_care.model.dto.Meta;
@@ -130,18 +131,24 @@ public class AppointmentServiceImpl implements AppointmentService {
             String appointmentTime = appointmentRequest.getAppointmentTime().toString();
 
             // Fetch the available doctor ID
-            Integer availableDoctorId = appointmentRepository.findAvailableDoctorId(appointmentDate, appointmentTime)
-                    .orElseThrow(() -> new UsernameNotFoundException("Don't have doctor "));
+            Integer availableDoctorId = appointmentRepository.findAvailableDoctorId(appointmentDate, appointmentTime).orElseThrow(() -> new UsernameNotFoundException("Don't have doctor "));
 
             AppointmentEntity appointment = new AppointmentEntity();
             appointment.setDoctorId(availableDoctorId);
 
-            if (appointmentRequest.getPatientId() == 0) {
-                appointment.setPatientId(userInfoService.getUserId());
-            } else {
-                appointment.setPatientId(appointmentRequest.getPatientId());
+            int patientId;
+            // check patientId transmission by admin or jwt
+            if (appointmentRequest.getPatientId() == 0)
+                patientId = userInfoService.getUserId();
+            else
+                patientId = appointmentRequest.getPatientId();
+
+            // Check if the patient is scheduled in pending (prevent spam)
+            if (appointmentRepository.checkPatientOnPending(userInfoService.getUserId()).orElse(false)) {
+                throw new RuntimeException("The patient currently has another appointment pending.");
             }
 
+            appointment.setPatientId(patientId);
             appointment.setAppointmentStatus(AppointmentStatus.Pending);
             appointment.setAppointmentDate(appointmentRequest.getAppointmentDate());
             appointment.setAppointmentTime(appointmentRequest.getAppointmentTime());
@@ -164,10 +171,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 
             // Manually remove unavailable appointments
             for (AppointmentTimeResponse unavailable : unavailableList) {
-                result.removeIf(available ->
-                        available.getAppointmentTime().equals(unavailable.getAppointmentTime()) &&
-                                available.getAppointmentDate().equals(unavailable.getAppointmentDate())
-                );
+                result.removeIf(available -> available.getAppointmentTime().equals(unavailable.getAppointmentTime()) && available.getAppointmentDate().equals(unavailable.getAppointmentDate()));
             }
 
             return result;
@@ -187,19 +191,14 @@ public class AppointmentServiceImpl implements AppointmentService {
 
         // Iterate through the appointments and convert them to DTOs
         appointmentsPage.getContent().forEach(appointmentEntity -> {
-            String patientName = userRepository.findById(appointmentEntity.getPatientId())
-                    .map(UserEntity::getFullName)
-                    .orElse("");
-            String doctorName = userRepository.findById(appointmentEntity.getDoctorId())
-                    .map(UserEntity::getFullName)
-                    .orElse("");
+            String patientName = userRepository.findById(appointmentEntity.getPatientId()).map(UserEntity::getFullName).orElse("");
+            String doctorName = userRepository.findById(appointmentEntity.getDoctorId()).map(UserEntity::getFullName).orElse("");
 
             String diagnosis = "";
             String treatment = "";
 
             if (appointmentEntity.getMedicalRecordId() != null) {
-                Optional<MedicalRecordEntity> medicalRecordOpt = medicalRecordRepository
-                        .findById(appointmentEntity.getMedicalRecordId());
+                Optional<MedicalRecordEntity> medicalRecordOpt = medicalRecordRepository.findById(appointmentEntity.getMedicalRecordId());
                 if (medicalRecordOpt.isPresent()) {
                     diagnosis = medicalRecordOpt.get().getDiagnosis();
                     treatment = medicalRecordOpt.get().getTreatment();
@@ -207,15 +206,7 @@ public class AppointmentServiceImpl implements AppointmentService {
             }
 
             // Create the DTO and add it to the list
-            AppointmentDetailDTO dto = new AppointmentDetailDTO(
-                    appointmentEntity.getId(),
-                    patientName,
-                    doctorName,
-                    appointmentEntity.getAppointmentDate(),
-                    appointmentEntity.getAppointmentTime().name(),
-                    appointmentEntity.getAppointmentStatus().name(),
-                    diagnosis,
-                    treatment);
+            AppointmentDetailDTO dto = new AppointmentDetailDTO(appointmentEntity.getId(), patientName, doctorName, appointmentEntity.getAppointmentDate(), appointmentEntity.getAppointmentTime().name(), appointmentEntity.getAppointmentStatus().name(), diagnosis, treatment);
             appointmentDetailDTOS.add(dto);
         });
 
@@ -320,34 +311,21 @@ public class AppointmentServiceImpl implements AppointmentService {
         Optional<AppointmentEntity> appointmentOpt = appointmentRepository.findById(id);
         if (appointmentOpt.isPresent()) {
             AppointmentEntity appointment = appointmentOpt.get();
-            String patientName = userRepository.findById(appointment.getPatientId())
-                    .map(UserEntity::getFullName)
-                    .orElse("");
-            String doctorName = userRepository.findById(appointment.getDoctorId())
-                    .map(UserEntity::getFullName)
-                    .orElse("");
+            String patientName = userRepository.findById(appointment.getPatientId()).map(UserEntity::getFullName).orElse("");
+            String doctorName = userRepository.findById(appointment.getDoctorId()).map(UserEntity::getFullName).orElse("");
 
             String diagnosis = "";
             String treatment = "";
 
             if (appointment.getMedicalRecordId() != null) {
-                Optional<MedicalRecordEntity> medicalRecordOpt = medicalRecordRepository
-                        .findById(appointment.getMedicalRecordId());
+                Optional<MedicalRecordEntity> medicalRecordOpt = medicalRecordRepository.findById(appointment.getMedicalRecordId());
                 if (medicalRecordOpt.isPresent()) {
                     diagnosis = medicalRecordOpt.get().getDiagnosis();
                     treatment = medicalRecordOpt.get().getTreatment();
                 }
             }
 
-            AppointmentDetailDTO dto = new AppointmentDetailDTO(
-                    appointment.getId(),
-                    patientName,
-                    doctorName,
-                    appointment.getAppointmentDate(),
-                    appointment.getAppointmentTime().name(),
-                    appointment.getAppointmentStatus().name(),
-                    diagnosis,
-                    treatment);
+            AppointmentDetailDTO dto = new AppointmentDetailDTO(appointment.getId(), patientName, doctorName, appointment.getAppointmentDate(), appointment.getAppointmentTime().name(), appointment.getAppointmentStatus().name(), diagnosis, treatment);
 
             return Optional.of(dto);
         } else {
@@ -357,25 +335,13 @@ public class AppointmentServiceImpl implements AppointmentService {
 
     private AppointmentDTO convertToDTO(AppointmentEntity appointmentEntity) {
         // get patient name by id
-        String patientName = userRepository.findById(appointmentEntity.getPatientId())
-                .map(UserEntity::getFullName)
-                .orElse("");
+        String patientName = userRepository.findById(appointmentEntity.getPatientId()).map(UserEntity::getFullName).orElse("");
 
         // get doctor name by id
-        String doctorName = userRepository.findById(appointmentEntity.getDoctorId())
-                .map(UserEntity::getFullName)
-                .orElse("");
+        String doctorName = userRepository.findById(appointmentEntity.getDoctorId()).map(UserEntity::getFullName).orElse("");
 
         // convert AppointmentEntity to AppointmentDTO
-        return new AppointmentDTO(
-                appointmentEntity.getId(),
-                patientName,
-                doctorName,
-                appointmentEntity.getMedicalRecordId(),
-                appointmentEntity.getAppointmentDate(),
-                appointmentEntity.getAppointmentTime().name(),
-                appointmentEntity.getAppointmentStatus().name()
-        );
+        return new AppointmentDTO(appointmentEntity.getId(), patientName, doctorName, appointmentEntity.getMedicalRecordId(), appointmentEntity.getAppointmentDate(), appointmentEntity.getAppointmentTime().name(), appointmentEntity.getAppointmentStatus().name());
     }
 
     @Override
@@ -385,9 +351,7 @@ public class AppointmentServiceImpl implements AppointmentService {
         // Filter by name
         if (patientName != null && !patientName.isEmpty()) {
             Specification<UserEntity> userSpec = SpecificationUtil.likeIgnoreCase("fullName", patientName);
-            List<Integer> patientIds = userRepository.findAll(userSpec).stream()
-                    .map(UserEntity::getId)
-                    .collect(Collectors.toList());
+            List<Integer> patientIds = userRepository.findAll(userSpec).stream().map(UserEntity::getId).collect(Collectors.toList());
 
             if (!patientIds.isEmpty()) {
                 spec = spec.and(SpecificationUtil.in("patientId", patientIds));

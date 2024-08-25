@@ -9,6 +9,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
@@ -48,5 +49,11 @@ public interface AppointmentRepository extends JpaRepository<AppointmentEntity, 
 
     Page<AppointmentEntity> findByPatientId(Integer patientId, Pageable pageable);
 
+    @Query(value = "SELECT EXISTS ( " +
+            "    SELECT 1  " +
+            "    FROM appointments a  " +
+            "    WHERE a.patient_id = :patientId AND a.appointment_status = 'Pending')",
+            nativeQuery = true)
+    Optional<Boolean> checkPatientOnPending(@Param("patientId") int patientId);
 
 }
