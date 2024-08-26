@@ -39,7 +39,7 @@ public interface AppointmentRepository extends JpaRepository<AppointmentEntity, 
             "    users u " +
             "LEFT JOIN  " +
             "    appointments a ON u.id = a.doctor_id  " +
-            "    AND a.appointment_status != 'Cancel' " +
+            "    AND a.appointment_status != 'Pending' " +
             "WHERE  " +
             "    u.role_id = 2 " +
             "    AND a.appointment_date IS NOT NULL " +

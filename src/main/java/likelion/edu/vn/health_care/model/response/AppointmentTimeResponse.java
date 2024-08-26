@@ -7,4 +7,6 @@ import java.time.LocalDate;
 public interface AppointmentTimeResponse {
     LocalDate getAppointmentDate();  // Maps to 'a.appointment_date AS appointmentDate'
     AppointmentTime getAppointmentTime();   // Maps to 'a.appointment_time AS appointmentTime'
+
+
 }
