@@ -5,7 +5,6 @@ import likelion.edu.vn.health_care.entity.MedicalRecordEntity;
 import likelion.edu.vn.health_care.entity.UserEntity;
 import likelion.edu.vn.health_care.enumration.AppointmentStatus;
 import likelion.edu.vn.health_care.enumration.AppointmentTime;
-import likelion.edu.vn.health_care.exception.ResourceNotFoundException;
 import likelion.edu.vn.health_care.model.dto.AppointmentDTO;
 import likelion.edu.vn.health_care.model.dto.AppointmentDetailDTO;
 import likelion.edu.vn.health_care.model.dto.Meta;
@@ -162,22 +161,32 @@ public class AppointmentServiceImpl implements AppointmentService {
     @Override
     public List<AppointmentTimeResponse> getAppointmentTimeAvailable() {
         List<AppointmentTimeResponse> listAppointmentAvailable = generateNext3DaysAppointments();
-        Optional<List<AppointmentTimeResponse>> listAppointmentTimeUnavailable = getAppointmentTimeUnavailable();
+//        Optional<List<AppointmentTimeResponse>> listAppointmentTimeUnavailable = getAppointmentTimeUnavailable();
+        List<AppointmentTimeResponse> result = new ArrayList<>();
 
-        if (listAppointmentTimeUnavailable.isPresent()) {
-            List<AppointmentTimeResponse> unavailableList = listAppointmentTimeUnavailable.get();
-            // Create a new list to store the available appointments after removing the unavailable ones
-            List<AppointmentTimeResponse> result = new ArrayList<>(listAppointmentAvailable);
+        for (AppointmentTimeResponse appointmentTimeResponse : listAppointmentAvailable) {
+            Optional<Integer> doctorIdAvailable =  appointmentRepository.findAvailableDoctorId(
+                    appointmentTimeResponse.getAppointmentDate().toString(), appointmentTimeResponse.getAppointmentTime().toString());
 
-            // Manually remove unavailable appointments
-            for (AppointmentTimeResponse unavailable : unavailableList) {
-                result.removeIf(available -> available.getAppointmentTime().equals(unavailable.getAppointmentTime()) && available.getAppointmentDate().equals(unavailable.getAppointmentDate()));
+            if (doctorIdAvailable.isPresent()) {
+                result.add(appointmentTimeResponse);
             }
-
-            return result;
         }
+//
+//        if (listAppointmentTimeUnavailable.isPresent()) {
+//            List<AppointmentTimeResponse> unavailableList = listAppointmentTimeUnavailable.get();
+//            // Create a new list to store the available appointments after removing the unavailable ones
+//            List<AppointmentTimeResponse> result = new ArrayList<>(listAppointmentAvailable);
+//
+//            // Manually remove unavailable appointments
+//            for (AppointmentTimeResponse unavailable : unavailableList) {
+//                result.removeIf(available -> available.getAppointmentTime().equals(unavailable.getAppointmentTime()) && available.getAppointmentDate().equals(unavailable.getAppointmentDate()));
+//            }
+//
+//            return result;
+//        }
 
-        return listAppointmentAvailable;
+        return result;
     }
 
 
