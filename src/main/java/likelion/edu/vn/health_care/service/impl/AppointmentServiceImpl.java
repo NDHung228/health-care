@@ -143,7 +143,7 @@ public class AppointmentServiceImpl implements AppointmentService {
                 patientId = appointmentRequest.getPatientId();
 
             // Check if the patient is scheduled in pending (prevent spam)
-            if (appointmentRepository.checkPatientOnPending(userInfoService.getUserId()).orElse(false)) {
+            if (appointmentRepository.checkPatientOnPending(patientId).orElse(false)) {
                 throw new RuntimeException("The patient currently has another appointment pending.");
             }
 
@@ -159,7 +159,7 @@ public class AppointmentServiceImpl implements AppointmentService {
     }
 
     @Override
-    public List<AppointmentTimeResponse> getAppointmentTimeAvailable() {
+        public List<AppointmentTimeResponse> getAppointmentTimeAvailable() {
         List<AppointmentTimeResponse> listAppointmentAvailable = generateNext3DaysAppointments();
 //        Optional<List<AppointmentTimeResponse>> listAppointmentTimeUnavailable = getAppointmentTimeUnavailable();
         List<AppointmentTimeResponse> result = new ArrayList<>();
