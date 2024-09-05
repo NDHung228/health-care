@@ -15,10 +15,12 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -34,6 +36,16 @@ public class UserController {
 
     @Autowired
     private UserService userService;
+
+    
+
+    @GetMapping("/todo/{todoId}")
+    public String getTodo(@PathVariable(name = "todoId") Integer todoId) {
+        int[] ints = {1,2,3};
+        ints[todoId] = 5;
+
+        return todoId.toString();
+    }
 
     @PostMapping("/register")
     public ResponseEntity<Object> register(@RequestBody UserRequest user) {
@@ -81,7 +93,6 @@ public class UserController {
 
     @PostMapping("/doctor/register")
     public ResponseEntity<Object> registerDoctor(@RequestBody UserRequest user) {
-        System.err.println("Demo");
         try {
             String response = userInfoService.addDoctor(user);
             return ResponseHandler.generateResponse(HttpStatus.CREATED, false, "Register success", response);
@@ -130,6 +141,7 @@ public class UserController {
     }
 
     @GetMapping("/get-all-doctor")
+    @PreAuthorize("hasAuthority('Admin')")
     public ResponseEntity<Object> getAllDoctor() {
         List<UserResponse> listDoctor = userService.getAllDoctor();
         if (listDoctor != null) {
